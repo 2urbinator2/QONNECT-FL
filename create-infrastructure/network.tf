@@ -1,0 +1,53 @@
+# many resources are in virtual network
+resource "azurerm_virtual_network" "vnet" {
+  name                = "vnet-swarmchestrate"
+  address_space       = ["10.0.0.0/16"]
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+}
+
+# to communicate along another resources are in a subnet
+resource "azurerm_subnet" "subnet" {
+  name                 = "subnet-cluster"
+  resource_group_name  = data.azurerm_resource_group.existing.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+# nsgs for only traffic from inside to outside possible and only specific IPs have access to the subnet 
+resource "azurerm_network_security_group" "nsg" {
+  name                = "specific-nsgs"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+
+  security_rule {
+    name                       = "AllowSSH"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "141.23.217.93"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowOutbound"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+}
+
+# applies the rule to the subnet
+resource "azurerm_subnet_network_security_group_association" "assoc" {
+  subnet_id                 = azurerm_subnet.subnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+

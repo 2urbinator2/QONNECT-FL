@@ -1,0 +1,15 @@
+[cloud-energy-control]
+cloud-energy-master ansible_host=52.226.125.55 private_ip=10.0.1.4
+
+[cloud-energy-worker]
+cloud-energy-worker ansible_host=172.191.36.156 private_ip=10.0.1.8
+
+[fog-energy-control]
+fog-energy-master ansible_host=74.235.23.225 private_ip=10.0.1.5
+
+[fog-energy-worker]
+fog-energy-worker ansible_host=172.173.161.240 private_ip=10.0.1.6
+
+[all:vars]
+ansible_user=furban
+ansible_ssh_private_key_file=~/.ssh/az-key

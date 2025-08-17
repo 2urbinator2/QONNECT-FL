@@ -1,0 +1,12 @@
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+
+# Variable definitions (sensible Daten)
+*.tfvars
+
+# Terraform directory with modules & plugins
+.terraform/
+
+# Terraform Lock-Datei ignorieren
+.terraform.lock.hcl

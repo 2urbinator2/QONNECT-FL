@@ -1,0 +1,27 @@
+- name: Install k3s cluster
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Installing Dependencies
+      apt:
+        name: curl
+        state: present
+        update_cache: yes
+
+    - name: Install k3s on control plane
+      shell: |
+        curl -sfL https://get.k3s.io | sh -s - server
+      when: "'control' in group_names"
+
+    - name: Get k3s token from control plane
+      command: cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+      when: "'control' in group_names"
+      delegate_to: "{{ groups['control'][0] }}"
+      run_once: true
+
+    - name: Install k3s on worker
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['control'][0]].private_ip }}:6443 K3S_TOKEN={{ k3s_token.stdout }} sh -
+      when: "'worker' in group_names"
