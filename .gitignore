@@ -10,3 +10,6 @@
 
 # Terraform Lock-Datei ignorieren
 .terraform.lock.hcl
+
+# Config files from the k3s cluster
+/Config/
