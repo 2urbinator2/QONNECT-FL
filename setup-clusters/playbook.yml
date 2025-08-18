@@ -1,7 +1,6 @@
 - name: Install k3s clusters
   hosts: all
   become: yes
-
   tasks:
     - name: Installing dependencies
       apt:
@@ -9,22 +8,31 @@
         state: present
         update_cache: yes
 
+- name: Install k3s on control planes
+  hosts: "*-control"
+  become: yes
+  tasks:
     - name: Install k3s on control plane
       shell: |
         curl -sfL https://get.k3s.io | sh -s - server
-      when: "'control' in group_names"
-
+    
     - name: Get k3s token from control plane
       command: cat /var/lib/rancher/k3s/server/node-token
       register: k3s_token
-      delegate_to: "{{ inventory_hostname }}"
-      when: "'control' in group_names"
-      run_once: true
-
+      changed_when: false
+    
+- name: Install k3s on workers
+  hosts: "*-worker"
+  become: yes
+  vars:
+    k3s_port: 6443
+  tasks:
     - name: Install k3s on workers
       shell: |
-        curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups[item+'-control'][0]].private_ip }}:{{ k3s_port }} K3S_TOKEN={{ hostvars[groups[item+'-control'][0]].k3s_token.stdout }} sh -
-      loop: "{{ groups.keys() | select('search', '-worker$') | map('regex_replace', '-worker$', '') | list }}"
-      loop_control:
-        loop_var: item
-      when: "'worker' in group_names"
+        curl -sfL https://get.k3s.io | \
+        K3S_URL=https://{{ hostvars[groups[cluster+'-control'][0]].private_ip }}:{{ k3s_port }} \
+        K3S_TOKEN={{ hostvars[groups[cluster+'-control'][0]].k3s_token.stdout }} \
+        sh -
+      vars:
+        cluster: "{{ inventory_hostname | regex_replace('-(worker|master)$', '') }}"
+
