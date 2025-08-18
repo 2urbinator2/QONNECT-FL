@@ -12,4 +12,4 @@
 .terraform.lock.hcl
 
 # Config files from the k3s cluster
-/Config/
+/config/
