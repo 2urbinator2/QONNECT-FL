@@ -4,7 +4,13 @@
 - Azure Account and Azure CLI
 - Terraform
 
-## Create Instances
+```bash 
+# Create certificates for authentifiction in VPN
+./create-vpn-certificates.sh
+
+```
+
+## Create Infrastructure
 ```bash
 # Login 
 az login
