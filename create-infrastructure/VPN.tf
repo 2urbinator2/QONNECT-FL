@@ -1,0 +1,65 @@
+# Following Resources are created: VPN private IP, VPN Gatway and VPN Subnet
+
+resource "azurerm_public_ip" "vpn_gateway_ip" {
+  name                = "vpn-gateway-pip"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_virtual_network_gateway" "vpn_gateway" {
+  name                = "vpn-gateway"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+
+  type     = "Vpn"
+  vpn_type = "RouteBased"
+  sku      = "VpnGw1"
+
+  ip_configuration {
+    name                          = "vnetGatewayConfig"
+    public_ip_address_id          = azurerm_public_ip.vpn_gateway_ip.id
+    private_ip_address_allocation = "Static"
+    subnet_id                     = azurerm_subnet.gateway_subnet.id
+  }
+
+  enable_bgp = false
+}
+
+resource "azurerm_subnet" "gateway_subnet" {
+  name                 = "GatewaySubnet"
+  resource_group_name  = data.azurerm_resource_group.existing.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.255.0/27"] 
+}
+
+# Gateway Configuration
+
+resource "azurerm_vpn_server_configuration" "p2s_config" {
+  name                = "p2s-vpn-config"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+
+  vpn_authentication {
+    type = "Certificate"
+
+    certificate {
+      name             = "RootCert"
+      public_cert_data = filebase64("${path.module}/root.cer")
+    }
+  }
+}
+
+resource "azurerm_point_to_site_vpn_gateway" "p2s" {
+  name                = "p2s-vpn-gateway"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+  virtual_hub_id      = null
+  vpn_server_configuration_id = azurerm_vpn_server_configuration.p2s_config.id
+  scale_unit          = 1
+
+  vpn_client_address_pool {
+    address_prefixes = ["172.16.0.0/24"] # IPs, die Clients bekommen
+  }
+}

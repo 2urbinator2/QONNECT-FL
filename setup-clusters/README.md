@@ -8,6 +8,13 @@ Clusters are built from the virtual machines provisioned in Azure, and Kubernete
 ## Hints
 Currently on every cluster k3s is running regardless if it is a cloud, edge or fog cluster
 
+## Create VPN
+```bash
+# 1. Create certificates for authentifiction
+# 2. Create ressources with terraform 
+# 3. P2S-Konfiguration in Terraform 
+```
+
 ## Setup the clusters
 1. Enter IP-Adresses in the inventory.yml:
    - `cloud-energy-master ansible_host=xxx private_ip=xxx`
@@ -47,6 +54,10 @@ nano ~/.kube/k3s-clusters/fog-energy.yaml
 export KUBECONFIG=~/.kube/k3s-clusters/cloud-energy.yaml:~/.kube/k3s-clusters/fog-energy.yaml
 kubectl config view --merge --flatten > ~/.kube/config
 
+# (4) Testen: Dauerhafter Merge
+KUBECONFIG=~/.kube/k3s-clusters/cloud-energy.yaml:~/.kube/k3s-clusters/fog-energy.yaml \
+kubectl config view --merge --flatten > ~/.kube/config
+
 # Delete everything
 rm -rf ~/.kube/k3s-clusters/
 unset KUBECONFIG
@@ -61,3 +72,8 @@ kubectl config current-context
 # Changes cluster
 kubectl config use-context <cluster-name>
 ```
+
+# VPN
+- Zertifikate
+  - Root-Zertifikat
+  - Client Zertifikat

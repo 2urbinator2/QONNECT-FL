@@ -13,3 +13,8 @@
 
 # Config files from the k3s cluster
 config/
+
+# VPN-Certificates and keys
+*.key
+*.cer
+*.csr
