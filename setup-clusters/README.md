@@ -2,39 +2,22 @@
 Clusters are built from the virtual machines provisioned in Azure, and Kubernetes is deployed on top of them.
 
 ## Prerequisites
+- SSH-Access to all your instances 
 - Ansible 
 - (only for centralized cluster Management): Kubectl CLI
 
-## Hints
-Currently on every cluster k3s is running regardless if it is a cloud, edge or fog cluster
-
-## Create VPN
-```bash
-# 1. Create certificates for authentifiction
-# 2. Create ressources with terraform 
-# 3. P2S-Konfiguration in Terraform 
-```
-
 ## Setup the clusters
-1. Enter IP-Adresses in the inventory.yml:
-   - `cloud-energy-master ansible_host=xxx private_ip=xxx`
-   - this host name has to follow this semantic
-2. Run `ansible-playbook -i inventory.yml playbook.yml`
-3. (optional) Setting up centralized Kubernetes Cluster Management (see below)
-   - Note: It has to be deletetd 
-
-## Helpful Commands whether the clusters are running
-```bash
-# Connect with the instances
-ssh -i ~/.ssh/az-key furban@172.190.154.104
-
-# Checks the k3s status: Should be active
-sudo systemctl status k3s
-
-# Shows all nodes within the cluster
-sudo k3s kubectl get nodes -o wide
-```
-
+1. Fill out the `inventory.yml`
+   -   *For VBox:* 
+       - Change the hostname (Hostname != VM-Name): `sudo hostnamectl set-hostname control`
+       - To get enp0s8 use `ip -4 addr show dev enp0s8 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'` and enp0s8 use `ip -4 addr show dev enp0s9 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+2. Run `ansible-playbook -i inventory.yml playbook.yml` 
+3. (Optional) Check on your VMs
+   ```bash
+   sudo systemctl status k3s # Master
+   sudo systemctl status k3s-agent # Worker
+   sudo k3s kubectl get nodes -o wide # Both
+   ```
 ## Centralized Kubernetes Cluster Management
 ```bash 
 # Create centralized cluster management
@@ -77,3 +60,20 @@ kubectl config use-context <cluster-name>
 - Zertifikate
   - Root-Zertifikat
   - Client Zertifikat
+
+
+## Helpful commands in case of problems with the k3s-setup
+
+```Bash
+# Network/Connectivity
+curl -k https://192.168.56.6:6443
+nc -vz 192.168.56.6  6443
+
+# Token/Node Authentification
+sudo cat /var/lib/rancher/k3s/server/node-token # Master 
+ssh -i ~/.ssh/key-inst furban@192.168.56.6 "sudo cat /var/lib/rancher/k3s/server/node-token" # Worker
+
+# Delete previous Installations
+sudo /usr/local/bin/k3s-agent-uninstall.sh #worker
+sudo /usr/local/bin/k3s-uninstall.sh #master
+```

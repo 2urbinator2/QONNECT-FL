@@ -4,11 +4,33 @@
 - Azure Account and Azure CLI
 - Terraform
 
+
+
+## Übersichtlcier
+root.key → keep locally, secret, never share; used to sign client certificates
+root.cer → upload to Azure VPN Gateway, public, can be shared
+client.key → keep on client machine, secret, never share
+client.cer → installed on client machine, signed by root, can be shared for authentication
+
 ```bash 
-# Create certificates for authentifiction in VPN
+# Create certificates for authntifiction in VPN
 ./create-vpn-certificates.sh
 
+# 2. Create ressources with terraform 
+# 3. P2S-Konfiguration in Terraform 
 ```
+Unbeachtet lassen:
+- .ingore hinten an die file hängen
+
+Verbinden
+
+
+
+
+
+
+
+
 
 ## Create Infrastructure
 ```bash

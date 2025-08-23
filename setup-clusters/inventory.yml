@@ -1,15 +1,21 @@
+# ansible_ssh_private_key_file is the path to the SSH private (ls -l ~/.ssh/) key used for authentication and ansible_user is the SSH user on the target machines
+
+# Cloud (Azure): Use Public IPs for ansible_hosts and private_ip for the communication of the cluster
+
+# VirtualBox: Use enp0s9 for ansible_host and enp0s8 for private_ip
+
 [cloud-energy-control]
-cloud-energy-master ansible_host=172.174.19.157 private_ip=10.0.1.6
+cloud-energy-control ansible_host=192.168.56.6 private_ip=10.0.2.15
 
 [cloud-energy-worker]
-cloud-energy-worker ansible_host=172.178.28.140 private_ip=10.0.1.5
+cloud-energy-worker ansible_host=192.168.56.7 private_ip=10.0.2.4
 
 [fog-energy-control]
-fog-energy-master ansible_host=20.169.174.49 private_ip=10.0.1.4
+fog-energy-control ansible_host=192.168.56.5 private_ip=10.0.2.6
 
 [fog-energy-worker]
-fog-energy-worker ansible_host=20.185.254.190 private_ip=10.0.1.7
+fog-energy-worker ansible_host=192.168.56.4 private_ip=10.0.2.5
 
 [all:vars]
 ansible_user=furban
-ansible_ssh_private_key_file=~/.ssh/az-key
+ansible_ssh_private_key_file=~/.ssh/vbox-key
