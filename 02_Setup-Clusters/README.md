@@ -3,8 +3,7 @@ Clusters are built from the virtual machines provisioned in Azure, and Kubernete
 
 ## Prerequisites
 - SSH-Access to all your instances 
-- Ansible 
-- (only for centralized cluster Management): Kubectl CLI
+- Ansible: `brew install ansible` and check with `ansible --version`
 
 ## Setup the clusters
 1. Fill out the `inventory.yml`
