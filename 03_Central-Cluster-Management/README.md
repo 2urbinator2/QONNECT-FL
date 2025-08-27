@@ -29,12 +29,13 @@ After the infrastructure has been provisioned and Kubernetes is running on the c
     ```
 4. Restart K3s: `sudo systemctl restart k3s`
 5. Copy cluster config file to your local Kubernetes CLI (Change Name): `ssh -i ~/.ssh/vbox-key furban@192.168.56.5 "sudo cat /etc/rancher/k3s/k3s.yaml" > ~/.kube/vbox-cluster/fog-energy.yaml`
-6. Open the file `nano ~/.kube/vbox-cluster/fog-energy.yaml` and change the localhost `server: https://127.0.0.1:6443`to the en0s9 from the master VM
-7. Manuel Testing (optinal): `kubectl --kubeconfig ~/.kube/vbox-cluster/fog-energy.yaml get nodes`
-8. Rename the clusters: `kubectl --kubeconfig ~/.kube/vbox-cluster/fog-energy.yaml config rename-context default fog-energy `
-9.  Merge the config files into one to have a centralised cluster Mangement: `KUBECONFIG=~/.kube/vbox-cluster/cloud-energy.yaml:~/.kube/vbox-cluster/fog-energy.yaml kubectl config view --flatten > ~/.kube/config`
+6. (Only for VBox) Open the file `nano ~/.kube/vbox-cluster/fog-energy.yaml` and change the localhost `server: https://127.0.0.1:6443`to the en0s9 from the master VM
+7. (only for Azure) Port Forwarding: `ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.190.222.149`
+8. Manuel Testing (optinal): `kubectl --kubeconfig ~/.kube/vbox-cluster/fog-energy.yaml get nodes`
+9. Rename the clusters: `kubectl --kubeconfig ~/.kube/vbox-cluster/fog-energy.yaml config rename-context default fog-energy `
+10. Merge the config files into one to have a centralised cluster Mangement: `KUBECONFIG=~/.kube/vbox-cluster/cloud-energy.yaml:~/.kube/vbox-cluster/fog-energy.yaml kubectl config view --flatten > ~/.kube/config`
 
-## Steps for Azure
+11. **Virtual Private Network (VPN):** Another but expensive solution
 
 ## Helpful Kubernetes Commands
 ```bash 
@@ -50,5 +51,4 @@ kubectl get ns
 kubectl get svc
 kubectl get no
 kubectl get deploy
-
 ```
