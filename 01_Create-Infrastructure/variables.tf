@@ -5,6 +5,8 @@ variable "vm_names" {
         "cloud-energy-worker",
         "knowledge-base",
         "fog-energy-worker",
-        "fog-energy-master"
+        "fog-energy-master",
+        "edge-energy-master",
+        "edge-energy-worker"
     ]
 }

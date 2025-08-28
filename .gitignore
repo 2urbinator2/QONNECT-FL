@@ -14,6 +14,9 @@
 # Config files from the k3s cluster
 config/
 
+# Vagrant files
+.vagrant
+
 # VPN-Certificates and keys
 *.key
 *.cer
