@@ -6,6 +6,8 @@
 
 
 
+
+
 ## Übersichtlcier
 root.key → keep locally, secret, never share; used to sign client certificates
 root.cer → upload to Azure VPN Gateway, public, can be shared

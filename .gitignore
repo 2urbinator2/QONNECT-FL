@@ -17,6 +17,10 @@ config/
 # Vagrant files
 .vagrant
 
+# Python virtual environment
+venv/
+
+
 # VPN-Certificates and keys
 *.key
 *.cer

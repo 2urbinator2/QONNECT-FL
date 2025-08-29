@@ -1,0 +1,18 @@
+[cloud-energy-control]
+Cloud-Energy-Control ansible_port=2222 ansible_ssh_private_key_file=.vagrant/machines/Cloud-Energy-Control/virtualbox/private_key 
+
+[cloud-energy-worker]
+Cloud-Energy-Worker ansible_port=2200 ansible_ssh_private_key_file=.vagrant/machines/Cloud-Energy-Worker/virtualbox/private_key 
+
+[edge-energy-control]
+Edge-Energy-Control ansible_port=2202 ansible_ssh_private_key_file=.vagrant/machines/Edge-Energy-Control/virtualbox/private_key 
+
+[edge-energy-worker]
+Edge-Energy-Worker ansible_port=2201 ansible_ssh_private_key_file=.vagrant/machines/Edge-Energy-Worker/virtualbox/private_key 
+
+[all:vars]
+ansible_host=127.0.0.1
+ansible_user=vagrant 
+ansible_python_interpreter=/usr/bin/python3
+
+
