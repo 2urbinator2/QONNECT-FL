@@ -1,25 +1,139 @@
-# Setup Infrastructure and Clusters
+# Generelle Readme
 
+## Smaller Things
+### Virtual Environment Python
+```bash
+# Erstellen
+python3 -m venv venv
 
-In the first step, the infrastructure and the associated Kubernetes clusters need to be created. In the original **Swarmchestrate** setup, *Kind* is used for this purpose. This repository aims to be closer to a *production-like* environment, which is why **Swarmchestrate** should be deployed on real cloud resources (*Azure*). However, since budgets are often tight, this README also describes how to set up a Swarmchestrate VM instance in *VirtualBox*, which closely resembles a cloud infrastructure.
+# Pakete abfragen
+ansible --version
 
-1. To setup VMs and clusters in VirtualBox: `cd/VirtualBox`
-2. To setup VMs and clusters in Cloud (*Azure*): `cd/Azure`
+# (De-)Aktivieren
+source venv/bin/activate
+deactivate
 
-Once the infrastructure is in place, Swarmchestrate can be deployed as usual [1].Please use the provided `bootstrap.sh` in this folder.
-```Bash
-cd ...
+#Löschen
+rm -rf venv
+```
+### SSH
+```bash 
+ls ~/.ssh
+ssh -i ~/.ssh/az-key furban@172.190.154.104
 ```
 
-The main contribution of this repository is to optimize the runtime of Swarmchestrate, for which an additional component is used after deployment.
+### Ping
+```bash
+ping -c 4 -I enp0s10  192.168.56.38
+```
 
+## Virtualbox
 
+**Problem manuelles Erstellen der Instanzen:**  
+- Eine Erstellung von Instanzne mittels BashScript oder über die Gui ist sehr aufwendig
+  - Eine Erleichterung liefert das Klonen von Instanzen
+  - *Sudo-Rechte:* Sudo-Rechte müssen manuell auf den Instanzen vergeben werden, um beispielsweise Updates ausführen zu können
+  - *SSH-Zugriff.*
+    - es muss ein SSH key für den Zugriff auf die Instanzen erstellt werden 
+    - key muss jedes mal manuel mit eingegeben werden
+- Lösung: Verwendung von *Vagrant*
 
+### Vagrant
+- Vagrant ähnlich zu terraform für VirtualBox
+  - Einfaches, schnelles Erstellen und Löschen von Instanzen
+- Anstatt die ISO manuel downloaden zu müssen werden hier vorgefertigte Boxen verwendet
+- 4 Befehle:
+  - `Vagrant init` erstellt die Vagrant file, in der die Infrastruktur definiert
+  - `Vagrant up` erstellt die Resourcen gemäß der Vagrantfile, `Vagrant halt` hält die VMs an und `Vagrant destroy` zerstört alles
 
+**Erklärung Vagrant File:**
+- Verwendete Box wird angegeben: Ubuntu
+- Nat-Netzwerk
+  - Prüfen, ob Nat Netzwerk bereits vorhanden ist 
+  - falls nicht wird eins erstellt mit *DHCP* 
+- VM-Namen: Namen, sowie Paramter werden angegeben
+- Instanzen werden erstellt:
+  - Auf adapter 3 wird noch ein Host-Only Netzwerk gelegt
+  - Instanzen werden an das Natnetzwerk gehängt
+- Provision:
+  - installiert dhcp client auf den Instazen und ordnet diesen IPs zu für Nat-Netzwerk
 
+***Hilfreiche Commands***
+```bash
+# Prüfen der IP für das NAT-Netzwerk 
+ip -4 addr show dev enp0s9 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+```
 
+## Azure
+```bash 
+# Login 
+az login
 
+# Overview in Azure of the instances you have created
+az resource list --resource-group FelixSwarmchestrate --output table
 
+```
 
-## Sources
-1. https://github.com/dos-group/swarmchestrate-alternative
+## IaC
+### Terraform
+```bash
+# Create Instances
+terraform init
+terraform plan
+terraform apply
+
+# Destroys all created resources
+terraform destroy
+```
+
+### Ansible
+```bash 
+ansible-playbook -i inventory.yml playbook.yml
+ansible-playbook -i inventory.yml playbook.yml --ssh-common-args="-o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+```
+
+### Terraform 
+
+## Kubernetes
+**K3s Deployment**
+```Bash
+# Check if it`s working
+sudo systemctl status k3s # Master
+sudo systemctl status k3s-agent # Worker
+sudo k3s kubectl get nodes -o wide # Both
+
+# Delete previous Installations
+sudo /usr/local/bin/k3s-agent-uninstall.sh #worker
+sudo /usr/local/bin/k3s-uninstall.sh #master
+```
+
+### Kubernetes CLI
+```bash
+# Installation
+brew install kubectl
+mkdir -p ~/.kube
+kubectl version --client
+
+# Removal
+brew uninstall kubectl
+rm -rf ~/.kube
+
+ls ~/.kube/
+rm -rf ~/.kube/vbox-cluster
+```  
+
+### Helpful Kubernetes Commands
+```bash 
+# Cluster Commands
+kubectl config get-contexts # Shows all clusters
+kubectl config current-context # Shows current cluster
+kubectl config use-context name # Changes current cluster
+
+# Request commands in a cluster
+kubectl get all
+kubectl get po
+kubectl get ns
+kubectl get svc
+kubectl get no
+kubectl get deploy
+```

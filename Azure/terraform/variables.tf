@@ -1,12 +1,11 @@
 variable "vm_names" {
     type    = list(string)
     default = [
-        "cloud-energy-master",
+        "cloud-energy-control",
         "cloud-energy-worker",
-        "knowledge-base",
+        "fog-energy-control",
         "fog-energy-worker",
-        "fog-energy-master",
-        "edge-energy-master",
+        "edge-energy-control",
         "edge-energy-worker"
     ]
 }

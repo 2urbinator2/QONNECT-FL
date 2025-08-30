@@ -1,20 +1,6 @@
 # Central Cluster Management
 After the infrastructure has been provisioned and Kubernetes is running on the clusters, this step sets up the central cluster management from the host.
 
-## Install Kubectl CLI with brew (Mac OS)
-1. Uninstallation to have a fresh start 
-    ```bash
-    ls ~/.kube # Check whether folder exists 
-    rm -rf ~/.kube
-    brew uninstall kubectl
-    ```
-2. Installation
-    ```bash
-    brew install kubectl
-    mkdir -p ~/.kube # Folder for all config files
-    kubectl version --client
-    ```
-
 ## Steps for VirtualBox
 1. Create a folder for all VBox clusters: `mkdir -p ~/.kube/vbox-cluster`
 2. Check whether *kubeconfig* files are on the *master nodes*: Connect with`ssh -i ~/.ssh/vbox-key furban@192.168.56.5` and check `ls /etc/rancher/k3s` for *k3s.yaml*
@@ -37,18 +23,4 @@ After the infrastructure has been provisioned and Kubernetes is running on the c
 
 11. **Virtual Private Network (VPN):** Another but expensive solution
 
-## Helpful Kubernetes Commands
-```bash 
-# Cluster Commands
-kubectl config get-contexts # Shows all clusters
-kubectl config current-context # Shows current cluster
-kubectl config use-context name # Changes current cluster
 
-# Request commands in a cluster
-kubectl get all
-kubectl get po
-kubectl get ns
-kubectl get svc
-kubectl get no
-kubectl get deploy
-```

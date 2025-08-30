@@ -6,6 +6,7 @@
 ## Prerequisites
 - Python
 - Vagrant
+- Kubernetes CLI
 
 ## Create Infrastructure
 ```bash
@@ -23,36 +24,15 @@ vagrant up
 # Deploy K3s on the instances 
 ansible-playbook -i inventory.yml playbooks/k3s-setup.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
+#
+ansible-playbook -i inventory.yml playbooks/cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-
-
-```
-
-## Further settings
-```bash
-ansible --version
-deactivate
-rm -rf venv
-```
-
-   ```bash
-   sudo systemctl status k3s # Master
-   sudo systemctl status k3s-agent # Worker
-   sudo k3s kubectl get nodes -o wide # Both
-   ```
-
-## Deletion of clusters on the nodes
-
-```Bash
-# Delete previous Installations
-sudo /usr/local/bin/k3s-agent-uninstall.sh #worker
-sudo /usr/local/bin/k3s-uninstall.sh #master
 ```
 
 
 
 
-
+    
 
 
 
