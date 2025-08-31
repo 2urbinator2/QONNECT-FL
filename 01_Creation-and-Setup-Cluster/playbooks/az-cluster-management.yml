@@ -1,0 +1,44 @@
+- name: Prüfe ob K3s auf den Control-Instanzen vorhanden ist
+  hosts: "*-control"
+  tasks:
+    - name: Erstelle lokales Verzeichnis falls nicht vorhanden
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/.kube/az-cluster"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Verzeichnis /etc/rancher/k3s prüfen
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s
+      register: k3s_dir
+      ignore_errors: yes
+    
+    - name: Abbrechen falls Verzeichnis fehlt
+      ansible.builtin.fail:
+        msg: "❌ K3s scheint nicht installiert zu sein! Verzeichnis /etc/rancher/k3s fehlt."
+      when: 
+        - not inventory_hostname.startswith("cloud")
+        - k3s_dir.stat is defined and not k3s_dir.stat.exists
+    
+    - name: Prüfe zentrale K8s-Datei
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_file
+      when: inventory_hostname.startswith("cloud")
+
+    - name: Abbrechen, falls K8s Config-File fehlt
+      ansible.builtin.fail:
+        msg: "❌ Zentrale K8s-Datei fehlt auf {{ inventory_hostname }}!"
+      when: 
+        - inventory_hostname.startswith("cloud")
+        - k8s_file.stat is defined and not k8s_file.stat.exists
+    
+    - name: Setze advertise_ip auf die IP aus dem Inventar
+      ansible.builtin.set_fact:
+        advertise_ip: "{{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}"
+

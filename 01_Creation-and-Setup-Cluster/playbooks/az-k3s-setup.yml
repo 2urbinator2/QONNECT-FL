@@ -1,19 +1,15 @@
 - name: Install k3s clusters
   hosts: all
-  become: yes
   tasks:
     - name: Installing dependencies
       apt:
         name: curl
         state: present
         update_cache: yes
-
-
-
+      when: not inventory_hostname.startswith("cloud")
 
 - name: Install k3s on control planes
   hosts: "*-control"
-  become: yes
   tasks:
     - name: Install k3s on control plane
       shell: |
@@ -28,7 +24,6 @@
     
 - name: Install k3s on workers
   hosts: "*-worker"
-  become: yes
   vars:
     k3s_port: 6443
   tasks:

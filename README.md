@@ -106,6 +106,9 @@ sudo k3s kubectl get nodes -o wide # Both
 sudo /usr/local/bin/k3s-agent-uninstall.sh #worker
 sudo /usr/local/bin/k3s-uninstall.sh #master
 ```
+**K5s Deployment**
+`sudo KUBECONFIG=/etc/kubernetes/admin.conf kubectl get nodes`
+
 
 ### Kubernetes CLI
 ```bash

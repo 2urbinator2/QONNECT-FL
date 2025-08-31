@@ -14,3 +14,6 @@ config/
 # Python virtual environment
 venv/
 
+# Kubespray files
+kubespray/
+

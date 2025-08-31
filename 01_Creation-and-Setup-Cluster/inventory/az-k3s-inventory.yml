@@ -1,0 +1,23 @@
+[cloud-energy-control]
+cloud-energy-control ansible_host=172.174.34.108 private_ip=10.0.1.4
+
+[cloud-energy-worker]
+cloud-energy-worker ansible_host=172.191.209.87 private_ip=10.0.1.7
+
+[edge-energy-control]
+edge-energy-control ansible_host=172.190.231.123 private_ip=10.0.1.6
+
+[edge-energy-worker]
+edge-energy-worker ansible_host=172.191.32.70 private_ip=10.0.1.5
+
+[fog-energy-control]
+fog-energy-control ansible_host=74.235.0.111 private_ip=10.0.1.8
+
+[fog-energy-worker]
+fog-energy-worker ansible_host=172.206.192.200 private_ip=10.0.1.7
+
+[all:vars]
+ansible_user=furban
+ansible_ssh_private_key_file=~/.ssh/az-key
+ansible_python_interpreter=/usr/bin/python3
+ansible_become=true
