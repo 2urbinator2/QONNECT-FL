@@ -15,7 +15,8 @@
 ## Resource creation and setup
 ### 1. Create Virtual Environment 
 ```bash
-python3 -m venv venv
+/usr/bin/python3 -m venv venv
+
 source venv/bin/activate
 pip3 install -r requirements.txt
 ```
@@ -48,7 +49,7 @@ pip3 install -r requirements.txt
     # Fill out az-k3s-inventory.yml with only your edge and fog nodes and apply
     ansible-playbook -i inventory/az-k3s-inventory.yml playbooks/az-k3s-setup.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     ```
-  - *K8s* on cloud nodes:
+  - *K8s* on cloud nodes: Currently you have to do it for Cloud (f.i. you have to cloud clusters you have to di this step two times)
     ```bash
     # Clone the repository
     git clone https://github.com/kubernetes-sigs/kubespray.git
@@ -77,7 +78,18 @@ pip3 install -r requirements.txt
 
 ### 5. Setup Central Cluster Management
 - ***VirtualBox:*** `ansible-playbook -i inventory/vb-k3s-inventory.yml playbooks/vb-cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
-- ***Azure:***
+- ***Azure:***`ansible-playbook -i inventory/az-k3s-inventory.yml playbooks/az-cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
+  - Create tunnel to every cluster: `ssh -i ~/.ssh/az-key -L 6443:localhost:6443 user@cluster1 -fN` 
+  - See SSH-Connections with: `lsof -iTCP -sTCP:LISTEN | grep ssh`
+  - Delete tunnel with: `kill 12345`
+  - Aktuell: 
+    ```bash
+    ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.174.34.108 -fN
+    ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@172.190.231.123 -fN
+    ssh -i ~/.ssh/az-key -L 6445:localhost:6443 furban@74.235.0.111 -fN
+    ```
 
 
-ansible-playbook -i inventory/az-k3s-inventory.yml playbooks/az-cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+
+
+

@@ -41,4 +41,123 @@
     - name: Setze advertise_ip auf die IP aus dem Inventar
       ansible.builtin.set_fact:
         advertise_ip: "{{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}"
+    
+    - name: Schreibe config.yaml mit dynamischer advertise-address
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/config.yaml
+        content: |
+          advertise-address: {{ advertise_ip }}
+          tls-san:
+            - {{ advertise_ip }}
+        owner: root
+        group: root
+        mode: '0644'
+      when: not inventory_hostname.startswith("cloud")
+    
+    - name: Schreibe kubeadm ClusterConfiguration
+      ansible.builtin.copy:
+        dest: /etc/kubernetes/kubeadm-config.yaml
+        content: |
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: ClusterConfiguration
+          controlPlaneEndpoint: "{{ advertise_ip }}:6443"
+          apiServer:
+            certSANs:
+              - "{{ advertise_ip }}"
+          networking:
+            podSubnet: "10.244.0.0/16"
+        owner: root
+        group: root
+        mode: '0644'
+      when: inventory_hostname.startswith("cloud")
+    
+    - name: K3s neu starten
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: 
+        - k3s_dir.stat.exists
+        - not inventory_hostname.startswith("cloud")
+    
+    - name: Kubernetes kubelet neu starten
+      ansible.builtin.systemd:
+        name: kubelet
+        state: restarted
+      when: inventory_hostname.startswith("cloud")
+    
+    - name: Kopiere k3s.yaml vom Host auf den lokalen Rechner
+      ansible.builtin.fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ lookup('env','HOME') }}/.kube/az-cluster/{{ inventory_hostname }}.yaml"
+        flat: yes
+      when: not inventory_hostname.startswith("cloud")
+    
+    - name: Kopiere kubeadm admin.conf vom Host auf den lokalen Rechner
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ lookup('env','HOME') }}/.kube/az-cluster/{{ inventory_hostname }}.yaml"
+        flat: yes
+      when: inventory_hostname.startswith("cloud") 
+    
+    - name: Passe den API-Server-Port in allen vorhandenen Kubeconfigs an
+      ansible.builtin.replace:
+        path: "{{ lookup('env','HOME') }}/.kube/az-cluster/{{ item.name }}"
+        regexp: 'server: https://.*:6443'
+        replace: "server: https://localhost:{{ item.port }}"
+      loop:
+        - { name: "cloud-energy-control.yaml", port: 6443 }
+        - { name: "edge-energy-control.yaml", port: 6444 }
+        - { name: "fog-energy-control.yaml", port: 6445 }
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
 
+    - name: Passe den API-Server-Port in allen Kubeconfigs an
+      ansible.builtin.replace:
+        path: "{{ lookup('env','HOME') }}/.kube/az-cluster/{{ item }}.yaml"
+        regexp: 'server: https://.*:6443'
+        replace: "server: https://localhost:{{ 6443 + index}}"
+      loop: "{{ groups['all'] | select('search', '-control') | list }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Passe Kontextnamen dynamisch an für Azure-Cluster
+      ansible.builtin.shell: |
+        for file in ~/.kube/az-cluster/*.yaml; do
+          current_context=$(kubectl --kubeconfig "$file" config view -o jsonpath='{.contexts[0].name}')
+          cluster_name=$(basename "$file" .yaml | sed 's/-control//I; s/-worker//I')
+          if [ "$current_context" != "$cluster_name" ]; then
+            kubectl --kubeconfig "$file" config rename-context "$current_context" "$cluster_name"
+          fi
+        done
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      run_once: true
+      vars:
+        ansible_become: false
+    
+    - name: Zusammenführen der kubeconfig Dateien
+      ansible.builtin.shell: >
+        KUBECONFIG=$(ls ~/.kube/az-cluster/*.yaml | tr '\n' ':') kubectl config view --flatten > ~/.kube/config
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      become: no
+      vars:
+        ansible_become: false
+    
+    
+   
+  
+
+    
+
+  

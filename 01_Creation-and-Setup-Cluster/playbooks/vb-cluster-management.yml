@@ -58,12 +58,6 @@
         dest: "{{ lookup('env','HOME') }}/.kube/vbox-cluster/{{ inventory_hostname }}.yaml"
         flat: yes
   
-    - name: Kopiere k3s.yaml vom Host auf den lokalen Rechner
-      ansible.builtin.fetch:
-        src: /etc/rancher/k3s/k3s.yaml
-        dest: "{{ lookup('env','HOME') }}/.kube/vbox-cluster/{{ inventory_hostname }}.yaml"
-        flat: yes
-
     - name: Ersetze localhost mit enp0s10-IP in der übertragenen k3s.yaml
       ansible.builtin.replace:
         path: "{{ lookup('env','HOME') }}/.kube/vbox-cluster/{{ inventory_hostname }}.yaml"

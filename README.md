@@ -1,6 +1,10 @@
 # Generelle Readme
 
 ## Smaller Things
+### Tastenbefehle 
+- mehrere Zeilen kommentieren: cmd + k + c, cmd + k + u
+
+
 ### Virtual Environment Python
 ```bash
 # Erstellen
@@ -15,6 +19,9 @@ deactivate
 
 #Löschen
 rm -rf venv
+
+# Installation der requirements.txt
+pip install -r requirements.txt
 ```
 ### SSH
 ```bash 
@@ -123,6 +130,9 @@ rm -rf ~/.kube
 
 ls ~/.kube/
 rm -rf ~/.kube/vbox-cluster
+
+# Switch clusters 
+
 ```  
 
 ### Helpful Kubernetes Commands
