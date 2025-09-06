@@ -1,0 +1,10 @@
+---
+- name: Install PostgreSQL client
+  hosts: all
+  become: yes 
+  tasks:
+    - name: Install postgresql-client-14
+      apt:
+        name: postgresql-client-14
+        state: present
+        update_cache: yes

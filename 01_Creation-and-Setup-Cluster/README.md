@@ -15,7 +15,7 @@
 ## Resource creation and setup
 ### 1. Create Virtual Environment 
 ```bash
-/usr/bin/python3 -m venv venv
+/opt/homebrew/bin/python3 -m venv venv
 
 source venv/bin/activate
 pip3 install -r requirements.txt
@@ -84,9 +84,9 @@ pip3 install -r requirements.txt
   - Delete tunnel with: `kill 12345`
   - Aktuell: 
     ```bash
-    ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.174.34.108 -fN
-    ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@172.190.231.123 -fN
-    ssh -i ~/.ssh/az-key -L 6445:localhost:6443 furban@74.235.0.111 -fN
+    ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@20.39.41.4 -fN
+    ssh -i ~/.ssh/az-key -L 6445:localhost:6443 furban@20.39.50.134 -fN
+    ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@172.171.216.162 -fN
     ```
 
 

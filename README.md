@@ -6,9 +6,16 @@
 
 
 ### Virtual Environment Python
+- auf dem Mac ist 2x mal Python installiert 
+  - Mac /opt/homebrew/bin/python3
+  - Vev: /Users/urbani/Nextcloud2/Masterarbeit/master-thesis/02_Knowledge-Base/02_Anwendungsbereitstellung/App-Deployment-Testing/venv/bin/python3
+  - 
 ```bash
-# Erstellen
+# Erstellt venv auf dem aktuellem system python
 python3 -m venv venv
+
+# Erstellt die venv sicher auf dem brew python (besser)
+/opt/homebrew/bin/python3 -m venv venv
 
 # Pakete abfragen
 ansible --version
@@ -27,11 +34,16 @@ pip install -r requirements.txt
 ```bash 
 ls ~/.ssh
 ssh -i ~/.ssh/az-key furban@172.190.154.104
+
+
 ```
 
 ### Ping
 ```bash
+# VirtualBox
 ping -c 4 -I enp0s10  192.168.56.38
+
+ping 10.0.1.7
 ```
 
 ## Virtualbox
@@ -150,3 +162,6 @@ kubectl get svc
 kubectl get no
 kubectl get deploy
 ```
+
+### Azure Kubernetes Service (AKS)
+Managed Kubernetes, der das Erstellen, Skalieren und Verwalten von Container Anwendungen vereinfacht

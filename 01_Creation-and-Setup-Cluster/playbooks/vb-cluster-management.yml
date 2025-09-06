@@ -83,7 +83,8 @@
         done
       args:
         executable: /bin/bash
-
+        
+  
     - name: Zusammenführen der kubeconfig Dateien
       ansible.builtin.shell: >
         KUBECONFIG=$(ls ~/.kube/vbox-cluster/*.yaml | tr '\n' ':') kubectl config view --flatten > ~/.kube/config

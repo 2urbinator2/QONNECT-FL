@@ -17,3 +17,5 @@ venv/
 # Kubespray files
 kubespray/
 
+# Swarmchestrate files
+swarmchestrate-alternative/

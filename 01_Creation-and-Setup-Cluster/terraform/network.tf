@@ -45,6 +45,18 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
+    name                       = "AllowPostgresInbound"
+    priority                   = 1000
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = "5432"
+    source_address_prefix       = "VirtualNetwork"  
+    destination_address_prefix  = "*"              
+  }
+
+  security_rule {
     name                       = "AllowKubeAPI"
     priority                   = 150
     direction                  = "Inbound"
@@ -62,4 +74,3 @@ resource "azurerm_subnet_network_security_group_association" "assoc" {
   subnet_id                 = azurerm_subnet.subnet.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
-

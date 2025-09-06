@@ -1,20 +1,20 @@
 [cloud-energy-control]
-cloud-energy-control ansible_host=172.174.34.108 private_ip=10.0.1.4
+cloud-energy-control ansible_host=20.39.41.4 private_ip=10.0.1.7
 
 [cloud-energy-worker]
-cloud-energy-worker ansible_host=172.191.209.87 private_ip=10.0.1.7
+cloud-energy-worker ansible_host=172.190.185.131 private_ip=10.0.1.4
 
 [edge-energy-control]
-edge-energy-control ansible_host=172.190.231.123 private_ip=10.0.1.6
+edge-energy-control ansible_host=20.39.50.134 private_ip=10.0.1.9
 
 [edge-energy-worker]
-edge-energy-worker ansible_host=172.191.32.70 private_ip=10.0.1.5
+edge-energy-worker ansible_host=172.190.62.168 private_ip=10.0.1.6
 
 [fog-energy-control]
-fog-energy-control ansible_host=74.235.0.111 private_ip=10.0.1.8
+fog-energy-control ansible_host=172.171.216.162 private_ip=10.0.1.8
 
 [fog-energy-worker]
-fog-energy-worker ansible_host=172.206.192.200 private_ip=10.0.1.7
+fog-energy-worker ansible_host=172.190.157.79 private_ip=10.0.1.5
 
 [all:vars]
 ansible_user=furban
