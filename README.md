@@ -161,6 +161,20 @@ kubectl get ns
 kubectl get svc
 kubectl get no
 kubectl get deploy
+
+# Describe
+kubectl describe <resource-typ> <resource-name> -n <ns-name>
+
+
+# Delete
+kubectl delete svc resource-lead-agent-lb -n swarmchestrate
+```
+
+### Central cluster Management
+```bash
+ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@4.246.219.145 -fN
+ssh -i ~/.ssh/az-key -L 6445:localhost:6443 furban@20.39.50.134 -fN
+ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@172.171.216.162 -fN
 ```
 
 ### Azure Kubernetes Service (AKS)

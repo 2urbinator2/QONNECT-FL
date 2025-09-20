@@ -1,0 +1,25 @@
+- name: Install golang-migrate via packagecloud
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add golang-migrate GPG key
+      ansible.builtin.apt_key:
+        url: "https://packagecloud.io/golang-migrate/migrate/gpgkey"
+        keyring: "/etc/apt/keyrings/migrate.gpg"
+        state: present
+
+    - name: Add golang-migrate APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/migrate.gpg] https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_lsb.codename }} main"
+        filename: "migrate"
+        state: present
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install golang-migrate
+      ansible.builtin.apt:
+        name: migrate
+
+  

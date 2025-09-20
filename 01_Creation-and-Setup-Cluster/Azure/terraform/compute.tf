@@ -30,13 +30,13 @@ resource "azurerm_linux_virtual_machine" "vms" {
     resource_group_name = data.azurerm_resource_group.existing.name
     location            = data.azurerm_resource_group.existing.location
     size                = "Standard_B2s"
-    admin_username      = "furban"
+    admin_username      = var.admin_username
 
     network_interface_ids = [azurerm_network_interface.nic[each.key].id]
 
     admin_ssh_key {
-        username   = "furban"
-        public_key = file("~/.ssh/az-key.pub")
+        username   = var.admin_username
+        public_key = file(var.public_key_path)
     }
 
     os_disk {

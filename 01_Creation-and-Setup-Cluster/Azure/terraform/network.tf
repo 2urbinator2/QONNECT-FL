@@ -28,7 +28,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "141.23.217.93"
+    source_address_prefix      = var.my_ip
     destination_address_prefix = "*"
   }
 
@@ -64,8 +64,21 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "6443"
-    source_address_prefix      = "141.23.217.93"
+    source_address_prefix      = var.my_ip
     destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowSMBOutbound"
+    priority                   = 300
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = "445"
+    source_address_prefix       = "*"
+    destination_address_prefix  = "*"
+    description                = "Allow outbound SMB (TCP 445) to Azure File Share"
   }
 }
 
