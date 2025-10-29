@@ -1,0 +1,14 @@
+[cloud-energy-control]
+cloud-energy-control ansible_host=172.171.229.149 private_ip=10.0.1.6
+
+[cloud-energy-worker]
+cloud-energy-worker ansible_host=20.169.129.217 private_ip=10.0.1.7
+
+[knowledge_base]
+knowledge_base ansible_host=4.227.226.123 private_ip=10.0.1.5
+
+[all:vars]
+ansible_user=furban
+ansible_ssh_private_key_file=~/.ssh/az-key
+ansible_python_interpreter=/usr/bin/python3
+ansible_become=true

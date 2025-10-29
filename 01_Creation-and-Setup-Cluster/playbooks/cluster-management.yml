@@ -169,6 +169,36 @@
       vars:
         ansible_become: false
     
+    - name: Adjust context user names in kubeconfig
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        # sucht nach Zeilen, die "user: kubernetes-admin" enthalten
+        regexp: '^(\s*)user:\s*kubernetes-admin$'
+        # ersetzt sie durch eindeutigen User basierend auf dem Dateinamen
+        replace: "\\1user: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Adjust user names in kubeconfig
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)- name:\s*kubernetes-admin$'
+        replace: "\\1- name: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+
     - name: kubeconfig Dateien zusammenführen
       ansible.builtin.shell: >
         KUBECONFIG=$(ls ~/.kube/az-cluster/*.yaml | tr '\n' ':') kubectl config view --flatten > ~/.kube/config

@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt & install Python3 dev tools
+      apt:
+        name:
+          - python3-venv
+          - python3-pip
+          - python3-dev
+          - build-essential
+        state: present
+        update_cache: yes

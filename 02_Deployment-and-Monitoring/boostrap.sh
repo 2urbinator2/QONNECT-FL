@@ -1,9 +1,12 @@
 #!/bin/bash
 
 db() {
-    HOST="74.235.19.82"
-    USER="furban"
-    SSH_KEY="~/.ssh/az-key"
+
+    INVENTORY_FILE="../01_Creation-and-Setup-Cluster/Azure/az-k3s-inventory.yml"
+    HOSTNAME="knowledge_base"
+    HOST=$(grep -A1 "\[$HOSTNAME\]" "$INVENTORY_FILE" | tail -n1 | awk '{for(i=1;i<=NF;i++){if($i ~ /^ansible_host=/){split($i,a,"="); print a[2]}}}')
+    USER=$(grep "ansible_user=" "$INVENTORY_FILE" | head -n1 | awk -F= '{print $2}')
+    SSH_KEY=$(grep "ansible_ssh_private_key_file=" "$INVENTORY_FILE" | head -n1 | awk -F= '{print $2}')
 
     ansible-playbook -i ../01_Creation-and-Setup-Cluster/Azure/az-k3s-inventory.yml playbooks/remote-access-db.yml
 
@@ -134,9 +137,13 @@ case "$COMMAND" in
         setup_file_share "$@"
         ;;
     all)
+        db "$@"
         ns "$@"
         ingress "$@"
         cleanup_edge_ingress "$@"
+        metallb "$@"
+        raft_lb "$@"
+        setup_file_share "$@"
         ;;
     *)
         echo "Unknown command: $COMMAND"
