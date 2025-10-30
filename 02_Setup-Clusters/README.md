@@ -9,15 +9,10 @@
 - Terraform
 
 ## Resource creation and setup
-1. Create Virtual Environment with Ansible
-    ```bash
-    /opt/homebrew/bin/python3 -m venv venv
 
-    source venv/bin/activate
-    pip3 install -r requirements.txt
-    ```
+   
 
-2. Create Infrastructure
+1. Create Infrastructure
   - Check if IP has changed: `curl -4 ifconfig.me`
     ```bash
     cd terraform
@@ -27,7 +22,7 @@
     cd ..
     ```
 
-3. Deploy K3s and K8s clusters on the infrastructure
+2. Deploy K3s and K8s clusters on the infrastructure
     - ***K3S (Edge and Fog):*** Fillout `az-k3s-inventory.yml` (cloud nodes as well) and deploy with `ansible-playbook -i inventory.yml playbooks/k3s-setup.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
     - ***K8S (Cloud):*** Using Kubespray (You have to do it manually for every cluster)
       ```bash
@@ -53,7 +48,7 @@
       sudo rm -r kubespray
       ```
 
-4. Cluster Management with Kubernetes CLI: `ansible-playbook -i inventory.yml playbooks/cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
+3. Cluster Management with Kubernetes CLI: `ansible-playbook -i inventory.yml playbooks/cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
     ```bash
       # Create tunnel to every cluster to see all clusters in Kubernetes CLI: 
       ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@20.121.187.237 -fN # Cost 

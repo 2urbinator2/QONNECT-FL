@@ -1,1 +1,0 @@
-ansible-playbook -i hosts.ini setup_python.yml

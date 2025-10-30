@@ -1,4 +1,20 @@
-# Generelle Readme
+
+0. Create `venv` with requirements
+   1. ` /opt/homebrew/bin/python3 -m venv venv`
+   2. `source venv/bin/activate`
+   3. `pip3 install -r requirements.txt`
+    (!!!!! to-do eventuell müssen noch alle Pakete hier reingeschrieben werden, damit kein Anaconda installiert sein muss !!!!!!!)
+1. Create infrastructure in Azure  
+   1. `cd 01_Create-Infrastructure-Azure` 
+   2. Fill out: `terraform.tfvars`
+   3. (only first time):`terraform init`
+   4. `terraform plan` and `terraform apply`
+   5. `cd ..`
+2. Create clusters by deploying K8S and K3S (!!!!!! Übrerarbeiten!!!!!!!)
+
+
+
+e
 
 ## Smaller Things
 ### Tastenbefehle 

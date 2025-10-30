@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt & install Python3 dev tools
+      apt:
+        name:
+          - python3-venv
+          - python3-pip
+          - python3-dev
+          - build-essential
+        state: present
+        update_cache: yes
+
+    - name: Create virtual environment if it doesn't exist
+      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/venv"
+      args:
+        creates: "/home/{{ ansible_user }}/venv"
+
+    - name: Upgrade pip inside venv
+      ansible.builtin.command: "{{ ansible_env.HOME }}/venv/bin/pip install --upgrade pip"
+
+    - name: Install required Python packages inside venv
+      ansible.builtin.pip:
+        executable: "/home/{{ ansible_user }}/venv/bin/pip"
+        name:
+          - flwr
+          - scikit-learn
+          - pandas
+          - numpy
+        state: present
+      
+    - name: Install PyTorch inside venv
+      ansible.builtin.pip:
+        executable: "/home/{{ ansible_user }}/venv/bin/pip"
+        name: torch
+        state: present
+
