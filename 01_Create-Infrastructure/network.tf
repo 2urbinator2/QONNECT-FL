@@ -45,20 +45,44 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "AllowPostgresInbound"
-    priority                   = 1000
+    name                       = "AllowPostgresFromMyIP"
+    priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range           = "*"
     destination_port_range      = "5432"
-    source_address_prefix       = "VirtualNetwork"  
-    destination_address_prefix  = "*"              
+    source_address_prefix       = var.my_ip
+    destination_address_prefix  = "*"
+  }
+
+  security_rule {
+    name                       = "AllowPostgresFromVNet"
+    priority                   = 120
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = "5432"
+    source_address_prefix       = "VirtualNetwork" 
+    destination_address_prefix  = "*"
+  }
+
+  security_rule {
+    name                       = "AllowPgAdminFromMyIP"
+    priority                   = 130
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = "8089"
+    source_address_prefix       = var.my_ip
+    destination_address_prefix  = "*"
   }
 
   security_rule {
     name                       = "AllowKubeAPI"
-    priority                   = 150
+    priority                   = 140
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -70,7 +94,7 @@ resource "azurerm_network_security_group" "nsg" {
 
   security_rule {
     name                       = "AllowSMBOutbound"
-    priority                   = 300
+    priority                   = 150
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -82,8 +106,8 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "allow-flower-superlink"
-    priority                   = 1001
+    name                       = "FlowerConnection"
+    priority                   = 160
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"

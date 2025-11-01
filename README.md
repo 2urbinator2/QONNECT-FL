@@ -1,6 +1,5 @@
 
 0. Create `venv` with requirements: `source scripts/create-venv.sh`  
-    (!!!!! to-do eventuell müssen noch alle Pakete hier reingeschrieben werden, damit kein Anaconda installiert sein muss !!!!!!!)
 1. Create infrastructure in Azure  
    1. `cd 01_Create-Infrastructure-Azure` 
    2. Fill out: `terraform.tfvars`

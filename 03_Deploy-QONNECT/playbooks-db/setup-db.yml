@@ -1,0 +1,41 @@
+- name: Setup database
+  hosts: knowledge_base         
+  become: yes
+
+  collections:
+    - community.postgresql
+
+  tasks:
+    - name: Create PostgreSQL user
+      community.postgresql.postgresql_user:
+        name: foo
+        password: pass
+        state: present
+        login_user: postgres
+      become_user: postgres
+    
+    - name: Create PostgreSQL database
+      become_user: postgres
+      postgresql_db:
+        name: knowledge_base
+        owner: foo
+        state: present
+
+    - name: Create PostgreSQL listen on all interfaces
+      lineinfile:
+        path: /etc/postgresql/14/main/postgresql.conf
+        regexp: '^#?listen_addresses'
+        line: "listen_addresses = '*'"
+        state: present
+
+    - name: Access control rules for all IPs in pg_hba.conf
+      lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        regexp: '^host'
+        line: "host    all     all     0.0.0.0/0     md5"
+        state: present
+
+    - name: Restart PostgreSQL to apply changes
+      service:
+        name: postgresql
+        state: restarted

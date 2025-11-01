@@ -1,9 +1,14 @@
 #!/bin/bash
 
 db() {
+    echo "Adding community.postgresql collection"
+    ansible-galaxy collection install community.postgresql
 
-    echo "Creating database on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks/create-database.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Creating database on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/create-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+
+    echo "Setup database on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
     # ansible-playbook -i ../inventory.yml playbooks/remote-access-db.yml
 
