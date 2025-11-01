@@ -27,7 +27,7 @@ class Net(nn.Module):
 
  
 def load_data(partition_id: int, num_partitions: int):
-    df = pd.read_csv("/home/vagrant/data.csv")
+    df = pd.read_csv("/home/furban/data.csv")
 
     X = df[["hour", "day_of_week", "temperature", "household_size", "consumption_prev_hour"]].values
     y = df["consumption_next_hour"].values.reshape(-1, 1)

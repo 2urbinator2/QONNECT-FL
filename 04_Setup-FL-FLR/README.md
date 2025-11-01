@@ -1,10 +1,7 @@
+# Federated Learning
 
 
-
-
-
-
-How to train the model?
+## How to train the model?
 1. Prepare infrastructure: `ansible-playbook -i ../inventory.yml setup-flr.yml`
    1. (optional): Check if instances can ping with: `ping xxx` and `nc -zv xxx 22`
 2. Start Flower: Connect to every instance with `ssh -i ~/.ssh/az-key furban@xxx` and `source ~/venv/bin/activate` connect to venv
@@ -25,4 +22,5 @@ How to train the model?
         --clientappio-api-address 10.0.1.7:9094 \
         --node-config "partition-id=2 num-partitions=2"
         ```
-3. Start Flower: `flwr run .`
+3. Change `pyproject.toml`: `address = "4.227.226.123:9093"` in public IP of the server instance
+4. Start Flower: `flwr run .`

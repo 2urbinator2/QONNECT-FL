@@ -44,5 +44,5 @@ default = "remote-federation"
 
 # Remote federation example for use with SuperLink
 [tool.flwr.federations.remote-federation]
-address = "172.171.229.149:9093"
+address = "4.227.226.123:9093"
 insecure = true  # Remove this line to enable TLS
