@@ -2,35 +2,25 @@
 
 db() {
 
-    INVENTORY_FILE="../01_Creation-and-Setup-Cluster/Azure/az-k3s-inventory.yml"
-    HOSTNAME="knowledge_base"
-    HOST=$(grep -A1 "\[$HOSTNAME\]" "$INVENTORY_FILE" | tail -n1 | awk '{for(i=1;i<=NF;i++){if($i ~ /^ansible_host=/){split($i,a,"="); print a[2]}}}')
-    USER=$(grep "ansible_user=" "$INVENTORY_FILE" | head -n1 | awk -F= '{print $2}')
-    SSH_KEY=$(grep "ansible_ssh_private_key_file=" "$INVENTORY_FILE" | head -n1 | awk -F= '{print $2}')
+    echo "Creating database on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks/create-database.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    
+    # ansible-playbook -i ../inventory.yml playbooks/remote-access-db.yml
 
-    ansible-playbook -i ../01_Creation-and-Setup-Cluster/Azure/az-k3s-inventory.yml playbooks/remote-access-db.yml
+    # until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
+    #     echo "Warte auf die Datenbank..."
+    #     sleep 3
+    # done
 
-    ansible-playbook \
-        -i "$HOST," \
-        --user "$USER" \
-        --private-key "$SSH_KEY" \
-        playbooks/create-database.yml \
-        -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # ssh -i "$SSH_KEY" "$USER@$HOST" "mkdir -p knowledge-base"
 
-    until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
-        echo "Warte auf die Datenbank..."
-        sleep 3
-    done
+    # scp -i "$SSH_KEY" -r swarmchestrate-alternative/knowledge-base/migrations "$USER@$HOST:~/knowledge-base/"
 
-    ssh -i "$SSH_KEY" "$USER@$HOST" "mkdir -p knowledge-base"
-
-    scp -i "$SSH_KEY" -r swarmchestrate-alternative/knowledge-base/migrations "$USER@$HOST:~/knowledge-base/"
-
-    ssh -i "$SSH_KEY" "$USER@$HOST" '
-    cd /home/'"$USER"'/knowledge-base/migrations && 
-    for f in *.up.sql; do 
-        PGPASSWORD=pass psql -h localhost -U foo -d knowledge_base -f "$f"; 
-    done'
+    # ssh -i "$SSH_KEY" "$USER@$HOST" '
+    # cd /home/'"$USER"'/knowledge-base/migrations && 
+    # for f in *.up.sql; do 
+    #     PGPASSWORD=pass psql -h localhost -U foo -d knowledge_base -f "$f"; 
+    # done'
 
 }
 

@@ -80,6 +80,19 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix  = "*"
     description                = "Allow outbound SMB (TCP 445) to Azure File Share"
   }
+
+  security_rule {
+    name                       = "allow-flower-superlink"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9093"
+    source_address_prefix      = var.my_ip
+    destination_address_prefix = "*"
+  }
+
 }
 
 # applies the rule to the subnet

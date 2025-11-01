@@ -1,8 +1,5 @@
 
-0. Create `venv` with requirements
-   1. ` /opt/homebrew/bin/python3 -m venv venv`
-   2. `source venv/bin/activate`
-   3. `pip3 install -r requirements.txt`
+0. Create `venv` with requirements: `source scripts/create-venv.sh`  
     (!!!!! to-do eventuell müssen noch alle Pakete hier reingeschrieben werden, damit kein Anaconda installiert sein muss !!!!!!!)
 1. Create infrastructure in Azure  
    1. `cd 01_Create-Infrastructure-Azure` 
@@ -11,21 +8,19 @@
    4. `terraform plan` and `terraform apply`
    5. `cd ..`
 2. Create clusters by deploying K8S and K3S (!!!!!! Übrerarbeiten!!!!!!!)
+  - hier müssen direkt die inventory files vorbereitet werden
 
 
 
-e
-
-## Smaller Things
-### Tastenbefehle 
-- mehrere Zeilen kommentieren: cmd + k + c, cmd + k + u
 
 
-### Virtual Environment Python
-- auf dem Mac ist 2x mal Python installiert 
-  - Mac /opt/homebrew/bin/python3
-  - Vev: /Users/urbani/Nextcloud2/Masterarbeit/master-thesis/02_Knowledge-Base/02_Anwendungsbereitstellung/App-Deployment-Testing/venv/bin/python3
-  - 
+
+
+curl ifconfig.me 
+
+
+
+
 ```bash
 # Erstellt venv auf dem aktuellem system python
 python3 -m venv venv

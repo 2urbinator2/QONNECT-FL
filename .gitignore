@@ -20,3 +20,12 @@ kubespray/
 # Swarmchestrate files
 swarmchestrate-alternative/
 QONNECT/
+
+# Environment variable files
+.env
+
+# Example script to transfer data to the VMs
+transfer-data.sh
+
+# Database files
+db.md

@@ -1,8 +1,6 @@
 - name: create-database
-  hosts: all
+  hosts: knowledge_base
   become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
   tasks:
 
     - name: Install dependencies 
@@ -20,7 +18,7 @@
         name: psycopg2-binary
         executable: pip3
 
-    - name: Installiere PostgreSQL
+    - name: Install PostgreSQL
       apt:
         name: postgresql
         state: present
@@ -40,34 +38,34 @@
         mode: '0700'
 
     - name: Create PostgreSQL user
-      become_user: postgres
       postgresql_user:
-          name: foo
-          password: pass
-          state: present
+        name: foo
+        password: pass
+        state: present
+        login_user: postgres
     
-    - name: Create PostgreSQL database
-      become_user: postgres
-      postgresql_db:
-        name: knowledge_base
-        owner: foo
-        state: present
+    # - name: Create PostgreSQL database
+    #   become_user: postgres
+    #   postgresql_db:
+    #     name: knowledge_base
+    #     owner: foo
+    #     state: present
 
-    - name: PostgreSQL listen auf allen Interfaces
-      lineinfile:
-        path: /etc/postgresql/14/main/postgresql.conf
-        regexp: '^#?listen_addresses'
-        line: "listen_addresses = '*'"
-        state: present
+    # - name: Create PostgreSQL listen on all interfaces
+    #   lineinfile:
+    #     path: /etc/postgresql/14/main/postgresql.conf
+    #     regexp: '^#?listen_addresses'
+    #     line: "listen_addresses = '*'"
+    #     state: present
 
-    - name: Zugriffsregeln für alle IPs in pg_hba.conf eintragen
-      lineinfile:
-        path: /etc/postgresql/14/main/pg_hba.conf
-        regexp: '^host'
-        line: "host    all     all     0.0.0.0/0     md5"
-        state: present
+    # - name: ccess control rules for all IPs in pg_hba.conf
+    #   lineinfile:
+    #     path: /etc/postgresql/14/main/pg_hba.conf
+    #     regexp: '^host'
+    #     line: "host    all     all     0.0.0.0/0     md5"
+    #     state: present
 
-    - name: PostgreSQL neu starten, damit Änderungen wirksam werden
-      service:
-        name: postgresql
-        state: restarted
+    # - name: Restart PostgreSQL to apply changes
+    #   service:
+    #     name: postgresql
+    #     state: restarted
