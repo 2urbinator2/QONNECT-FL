@@ -45,18 +45,6 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "AllowPostgresFromMyIP"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range           = "*"
-    destination_port_range      = "5432"
-    source_address_prefix       = var.my_ip
-    destination_address_prefix  = "*"
-  }
-
-  security_rule {
     name                       = "AllowPostgresFromVNet"
     priority                   = 120
     direction                  = "Inbound"
