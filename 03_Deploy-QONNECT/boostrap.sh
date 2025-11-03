@@ -1,16 +1,17 @@
 #!/bin/bash
 
 db() {
-    echo "Adding community.postgresql collection"
-    ansible-galaxy collection install community.postgresql
+    # echo "Adding community.postgresql collection"
+    # ansible-galaxy collection install community.postgresql
 
     # echo "Creating database on $HOST"
     # ansible-playbook -i ../inventory.yml playbooks-db/create-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-    echo "Setup database on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Setup database on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    # ansible-playbook -i ../inventory.yml playbooks/remote-access-db.yml
+    echo "Setup remote access to database on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/remote-access-db.yml
 
     # until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
     #     echo "Warte auf die Datenbank..."

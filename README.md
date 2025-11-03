@@ -16,6 +16,7 @@
 
 
 curl ifconfig.me 
+curl -4 ifconfig.me
 
 
 
