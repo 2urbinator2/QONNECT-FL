@@ -41,9 +41,17 @@ db() {
 
 
 ns() {
+    # 
+    # for ctx in $(kubectl config get-contexts -o name); do
+    #     kubectl apply -f swarmchestrate-alternative/config/ns.yaml --context "$ctx"
+    # done
+
+    # Alternative Methode muss noch getestet werden
+    echo "Creating namespaces 'swarmchestrate' in all clusters"
     for ctx in $(kubectl config get-contexts -o name); do
-        kubectl apply -f swarmchestrate-alternative/config/ns.yaml --context "$ctx"
+        kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
     done
+    
 }
 
 ingress() {
