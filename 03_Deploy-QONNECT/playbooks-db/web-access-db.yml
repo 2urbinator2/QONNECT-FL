@@ -1,0 +1,42 @@
+- name: Setup pgAdmin4 for remote web access to PostgreSQL
+  hosts: knowledge_base
+  become: yes
+  tasks:
+
+    - name: Install pgAdmin4 dependencies
+      apt:
+        name:
+          - python3-venv
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: Create virtual environment for pgAdmin
+      command: python3 -m venv /opt/pgadmin4
+      args:
+        creates: /opt/pgadmin4
+
+    - name: Install pgAdmin4 in virtual environment
+      pip:
+        virtualenv: /opt/pgadmin4
+        name: pgadmin4
+        
+    - name: Create pgAdmin4 data directory in venv
+      file:
+        path: /opt/pgadmin4/pgadmin_data
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Set PGADMIN_CONFIG_HOME environment variable for current user
+      lineinfile:
+        path: /home/{{ ansible_user }}/.bashrc
+        line: 'export PGADMIN_CONFIG_HOME=/opt/pgadmin4/pgadmin_data'
+        state: present
+        create: yes
+    
+    - name: Start pgAdmin4 Web UI in background
+      command: /opt/pgadmin4/bin/pgadmin4
+      async: 0
+      poll: 0

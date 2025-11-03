@@ -10,8 +10,17 @@ db() {
     # echo "Setup database on $HOST"
     # ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    echo "Setup remote access to database on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks-db/remote-access-db.yml
+    # echo "Setup remote access to database on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/remote-access-db.yml
+
+    echo "Setup pgAdmin4 on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/web-access-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+
+
+
+
+
+
 
     # until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
     #     echo "Warte auf die Datenbank..."

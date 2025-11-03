@@ -158,29 +158,6 @@ rm -rf ~/.kube/vbox-cluster
 
 ```  
 
-### Helpful Kubernetes Commands
-```bash 
-# Cluster Commands
-kubectl config get-contexts # Shows all clusters
-kubectl config current-context # Shows current cluster
-kubectl config use-context name # Changes current cluster
-
-# Request commands in a cluster
-kubectl get all
-kubectl get po
-kubectl get ns
-kubectl get svc
-kubectl get no
-kubectl get deploy
-
-# Describe
-kubectl describe <resource-typ> <resource-name> -n <ns-name>
-
-
-# Delete
-kubectl delete svc resource-lead-agent-lb -n swarmchestrate
-```
-
 ### Central cluster Management
 ```bash
 ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@4.246.219.145 -fN
