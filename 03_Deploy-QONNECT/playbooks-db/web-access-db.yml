@@ -20,7 +20,7 @@
       pip:
         virtualenv: /opt/pgadmin4
         name: pgadmin4
-        
+
     - name: Create pgAdmin4 data directory in venv
       file:
         path: /opt/pgadmin4/pgadmin_data
@@ -36,7 +36,21 @@
         state: present
         create: yes
     
+    - name: Create pgAdmin4 config_local.py in venv
+      copy:
+        dest: /opt/pgadmin4/pgadmin_data/config_local.py
+        content: |
+          SESSION_DB_PATH = '/opt/pgadmin4/pgadmin_data/sessions'
+          STORAGE_DIR = '/opt/pgadmin4/pgadmin_data/storage'
+          SQLITE_PATH = '/opt/pgadmin4/pgadmin_data/pgadmin4.db'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+    
     - name: Start pgAdmin4 Web UI in background
-      command: /opt/pgadmin4/bin/pgadmin4
+      command: >
+        python3 /opt/pgadmin4/lib/python3.10/site-packages/pgadmin4/pgAdmin4.py
       async: 0
       poll: 0
+      environment:
+        PGADMIN_CONFIG_HOME: /opt/pgadmin4/pgadmin_data

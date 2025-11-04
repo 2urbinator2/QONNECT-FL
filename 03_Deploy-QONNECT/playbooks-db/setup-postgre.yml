@@ -1,5 +1,5 @@
-- name: create-database
-  hosts: knowledge_base
+- name: setup-postgre
+  hosts: central-management-vm
   become: yes
   tasks:
     - name: Install dependencies 
@@ -28,7 +28,7 @@
         state: started
         enabled: yes
 
-    - name: Create remote_tmp for  PostgreSQL
+    - name: Create remote_tmp for PostgreSQL
       file:
         path: /var/lib/postgresql/.ansible/tmp
         state: directory

@@ -1,4 +1,27 @@
-# Deploy Swarmchestrate in Azure
+# Deploy Qonnect in Azure
+
+
+
+## How to?
+1. Deploy the `knowladge_base` db `central-management-vm`: `./boostrap db`
+
+
+## Knowledge-base db
+The `knowladge_base` database is located on the `central-management-vm`:
+- you can check on `central-management-vm` whether db is running: `sudo systemctl status postgresql`
+- you can access and leave the database on `central-management-vm` with: `psql -U foo -d knowledge_base -h localhost`and `\q`
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Prerequisites
 - helm (package manager for Kubernetes) on your host

@@ -1,20 +1,17 @@
 #!/bin/bash
 
 db() {
-    # echo "Adding community.postgresql collection"
-    # ansible-galaxy collection install community.postgresql
+    echo "Adding community.postgresql collection"
+    ansible-galaxy collection install community.postgresql
 
-    # echo "Creating database on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/create-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup PostgreSQL on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-postgre.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-    # echo "Setup database on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup database on $HOST and enable remote access"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    # echo "Setup remote access to database on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/remote-access-db.yml
-
-    echo "Setup pgAdmin4 on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks-db/web-access-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Setup pgAdmin4 on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/web-access-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
 
