@@ -6,10 +6,22 @@
 1. Deploy the `knowladge_base` db `central-management-vm`: `./boostrap db`
 
 
+
 ## Knowledge-base db
 The `knowladge_base` database is located on the `central-management-vm`:
 - you can check on `central-management-vm` whether db is running: `sudo systemctl status postgresql`
 - you can access and leave the database on `central-management-vm` with: `psql -U foo -d knowledge_base -h localhost`and `\q`
+
+Due to `pgAdmin` it is also possible to access the db in the browser of your host
+1. Connect to `central-management-vm` via SSH
+2. Activate `source db-venv/bin/activate` and start pgAdmin with `pgadmin4`
+   - **Email:** `foo@bar.com`
+   - **Password:** `pass123456`
+3. Start tunnel: `ssh -i <ssh-key> -L 5050:localhost:5050 <admin_username>@<pIP central-management-vm>  -fN`
+   1. Reach the DB in your browser: `http://localhost:5050/`
+
+
+
 
 
 
@@ -33,7 +45,7 @@ The `knowladge_base` database is located on the `central-management-vm`:
    
 
 
-   
+
 3. Deploy RLA (Cloud-Clusters)
       ```bash
       cd swarmchestrate-alternative/resource-lead-agent

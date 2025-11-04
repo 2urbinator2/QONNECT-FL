@@ -10,14 +10,14 @@ db() {
     echo "Setup database on $HOST and enable remote access"
     ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    # echo "Setup pgAdmin4 on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup pgAdmin4 on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
 
 
 
-
+    # Prüfen, was genau da gmeacht wird!!!!!:
 
     # until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
     #     echo "Warte auf die Datenbank..."
@@ -33,22 +33,14 @@ db() {
     # for f in *.up.sql; do 
     #     PGPASSWORD=pass psql -h localhost -U foo -d knowledge_base -f "$f"; 
     # done'
-
 }
 
 
 ns() {
-    # 
-    # for ctx in $(kubectl config get-contexts -o name); do
-    #     kubectl apply -f swarmchestrate-alternative/config/ns.yaml --context "$ctx"
-    # done
-
-    # Alternative Methode muss noch getestet werden
-    echo "Creating namespaces 'swarmchestrate' in all clusters"
+    echo "Creating namespaces 'swarmchestrate' in all clusters if not exist"
     for ctx in $(kubectl config get-contexts -o name); do
         kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
     done
-    
 }
 
 ingress() {

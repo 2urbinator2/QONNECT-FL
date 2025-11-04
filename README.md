@@ -10,13 +10,19 @@
 
 ## Deploy QONNECT
 1. Create `venv` with requirements: `source scripts/create-venv.sh`  
-2. Create infrastructure in Azure: Follow `/01_Create-Infrastructure/README.md`
+2. Create infrastructure in Azure: `/01_Create-Infrastructure/README.md`
+
+
+
+  !!!!!!Überarbeiten!!!!!!!!!
+3. Setup the K3s and K8s clusters on the Azure VMs: `/02_Setup-Clusters/README.md`
+4. Deploy QONNECT on the clusters: `/03_Deploy-QONNECT/README.md`
 
 
 
 
-3. Create clusters by deploying K8S and K3S (!!!!!! Überarbeiten!!!!!!!)
-  - hier müssen direkt die inventory files vorbereitet werden
+
+
 
 
 ## Runtime Optimisation

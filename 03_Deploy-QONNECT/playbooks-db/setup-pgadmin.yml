@@ -17,3 +17,15 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+    
+    - name: Create virtual environment if it doesn't exist
+      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/db-venv"
+      args:
+        creates: "/home/{{ ansible_user }}/db-venv"
+
+    - name: Install pgAdmin4 inside venv
+      ansible.builtin.pip:
+        executable: "/home/{{ ansible_user }}/db-venv/bin/pip"
+        name:
+          - pgadmin4
+        state: present
