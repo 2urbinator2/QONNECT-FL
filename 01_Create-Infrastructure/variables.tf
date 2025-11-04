@@ -14,7 +14,7 @@ variable "vm_names" {
     # Cost
     #"cloud-cost-control",
     #"cloud-cost-worker", 
-    # Knowledge Base   
+    # Mangement VM  
     "central-management-vm"       
   ]
 }
@@ -35,7 +35,7 @@ variable "vm_sizes" {
     # Cost
     #"cloud-cost-control"         = "Standard_B2pls_v2" 
     #"cloud-cost-worker"          = "Standard_B2pls_v2"
-    # Knowledge Base  
+    # Management VM  
     "central-management-vm"       = "Standard_B2pls_v2"
   }
 }

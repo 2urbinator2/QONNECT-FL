@@ -1,14 +1,10 @@
 # Create and Setup Cluster 
 
-## Prerequisites
-- Python
-- Ansible
-- Kubernetes CLI
-- Azure Account and Azure CLI
-- SSH-Key
-- Terraform
 
 ## Resource creation and setup
+
+
+0. Install Dependencies on all clusters: 
 
    
 

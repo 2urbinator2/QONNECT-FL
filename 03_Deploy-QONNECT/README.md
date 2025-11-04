@@ -30,12 +30,10 @@ The `knowladge_base` database is located on the `central-management-vm`:
 ## Installation
 1. Clone: `git clone https://github.com/dos-group/QONNECT.git`
 2. Prepare Clusters: `./boostrap all`
-   - **Database:** You can access the database from every instance 
-      1. Connect to a VM via SSH: `ssh -i ~/.ssh/az-key furban@172.206.193.15`
-      2. Login:
-            - DB-VM: `psql -U foo -d knowledge_base -h localhost` with `pass`
-            - VM: `psql -h 10.0.1.4 -p 5432 -U foo -d knowledge_base`
-      3. Use: `\x` to have a better overview and `\q` for logout
+   
+
+
+   
 3. Deploy RLA (Cloud-Clusters)
       ```bash
       cd swarmchestrate-alternative/resource-lead-agent

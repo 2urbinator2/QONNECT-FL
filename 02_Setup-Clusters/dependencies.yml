@@ -1,0 +1,26 @@
+- name: Install dependencies on all clusters
+  hosts: all
+  tasks:
+    - name: Update apt & install Python3 dev tools
+      apt:
+        name:
+          - python3
+          - python3-venv
+          - python3-pip
+          - python3-dev
+          - build-essential
+        state: present
+        update_cache: yes
+
+- name: Install dependencies on all clusters
+  hosts: central-management-vm
+  become: yes
+  tasks:
+    - name: Install dependencies 
+      apt:
+        name:
+          - libpq-dev
+          - acl
+          - curl
+        state: present
+        update_cache: yes

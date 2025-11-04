@@ -1,17 +1,7 @@
 - name: setup-postgre
   hosts: central-management-vm
   become: yes
-  tasks:
-    - name: Install dependencies 
-      apt:
-        name:
-          - python3
-          - python3-pip
-          - libpq-dev
-          - acl
-        state: present
-        update_cache: yes
-    
+  tasks:    
     - name: Install psycopg2 for Python3
       pip:
         name: psycopg2-binary

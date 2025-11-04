@@ -11,7 +11,7 @@ db() {
     ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
     # echo "Setup pgAdmin4 on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/web-access-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
 

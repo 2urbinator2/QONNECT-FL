@@ -1,0 +1,19 @@
+- name: Setup pgAdmin4 for remote web access to PostgreSQL
+  hosts: central-management-vm
+  become: yes
+  tasks:
+    - name: Create /var/lib/pgadmin directory
+      ansible.builtin.file:
+        path: /var/lib/pgadmin
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Create /var/log/pgadmin directory
+      ansible.builtin.file:
+        path: /var/log/pgadmin
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
