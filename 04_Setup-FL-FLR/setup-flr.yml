@@ -2,17 +2,15 @@
 - hosts: all
   become: yes
   tasks:    
-    - name: Create virtual environment if it doesn't exist
-      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/venv"
-      args:
-        creates: "/home/{{ ansible_user }}/venv"
 
-    - name: Upgrade pip inside venv
-      ansible.builtin.command: "{{ ansible_env.HOME }}/venv/bin/pip install --upgrade pip"
-    
+    - name: Create virtual environment if it doesn't exist
+      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/venv-flr"
+      args:
+        creates: "/home/{{ ansible_user }}/venv-flr"
+
     - name: Install required Python packages inside venv
       ansible.builtin.pip:
-        executable: "/home/{{ ansible_user }}/venv/bin/pip"
+        executable: "/home/{{ ansible_user }}/venv-flr/bin/pip"
         name:
           - flwr
           - scikit-learn
@@ -22,7 +20,7 @@
       
     - name: Install PyTorch inside venv
       ansible.builtin.pip:
-        executable: "/home/{{ ansible_user }}/venv/bin/pip"
+        executable: "/home/{{ ansible_user }}/venv-flr/bin/pip"
         name: torch
         state: present
 
