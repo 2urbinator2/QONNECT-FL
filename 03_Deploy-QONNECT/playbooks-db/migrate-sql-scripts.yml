@@ -4,19 +4,19 @@
   become: yes
   tasks:
 
-    # - name: Ensure knowledge-base directory exists
-    #   file:
-    #     path: /home/{{ ansible_user }}/knowledge-base
-    #     state: directory
-    #     mode: '0755'
+    - name: Ensure knowledge-base directory exists
+      file:
+        path: /home/{{ ansible_user }}/knowledge-base
+        state: directory
+        mode: '0755'
     
-    # - name: Copy migrations-db directory to remote host
-    #   copy:
-    #     src: "{{ playbook_dir }}/../migrations-db/"
-    #     dest: /home/{{ ansible_user }}/knowledge-base/
-    #     owner: "{{ ansible_user }}"
-    #     group: "{{ ansible_user }}"
-    #     mode: '0755'
+    - name: Copy migrations-db directory to remote host
+      copy:
+        src: "{{ playbook_dir }}/../migrations-db/"
+        dest: /home/{{ ansible_user }}/knowledge-base/
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
     
     - name: Apply SQL migration scripts
       shell: |

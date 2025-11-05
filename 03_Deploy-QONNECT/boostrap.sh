@@ -1,51 +1,21 @@
 #!/bin/bash
 
 db() {
-    # echo "Adding community.postgresql collection"
-    # ansible-galaxy collection install community.postgresql
+    echo "Adding community.postgresql collection"
+    ansible-galaxy collection install community.postgresql
 
-    # echo "Setup PostgreSQL on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/setup-postgre.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup PostgreSQL on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-postgre.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-    # echo "Setup database on $HOST and enable remote access"
-    # ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup database on $HOST and enable remote access"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    # echo "Setup pgAdmin4 on $HOST"
-    # ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    echo "Setup pgAdmin4 on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
     echo "Migrate SQL scripts on $HOST"
     ansible-playbook -i ../inventory.yml playbooks-db/migrate-sql-scripts.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-
-
-
-    # ssh -i "$SSH_KEY" "$USER@$HOST" '
-    # cd /home/'"$USER"'/knowledge-base/migrations && 
-    # for f in *.up.sql; do 
-    #     PGPASSWORD=pass psql -h localhost -U foo -d knowledge_base -f "$f"; 
-    # done'
-}
-
-
-ns() {
-    echo "Creating namespaces 'swarmchestrate' in all clusters if not exist"
-    for ctx in $(kubectl config get-contexts -o name); do
-        kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
-    done
-}
-
-ingress() {
-    for ctx in $(kubectl config get-contexts -o name); do
-        if echo "$ctx" | grep -q '^cloud-'; then
-            kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml --context "$ctx"
-            kubectl wait --namespace ingress-nginx \
-                --for=condition=ready pod \
-                --selector=app.kubernetes.io/component=controller \
-                --timeout=300s \
-                --context "$ctx" || \
-            echo "Warning: Timeout beim Warten auf ingress-nginx-controller in $ctx."
-        fi
-    done
 }
 
 metallb() {
@@ -63,6 +33,27 @@ metallb() {
 
         # IP-Pool und L2Advertisement aus deiner Datei anwenden
         kubectl apply -f config/metallb.yaml --context "${ctx}"
+    done
+}
+
+ingress() {
+    for ctx in $(kubectl config get-contexts -o name); do
+        if echo "$ctx" | grep -q '^cloud-'; then
+            kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml --context "$ctx"
+            kubectl wait --namespace ingress-nginx \
+                --for=condition=ready pod \
+                --selector=app.kubernetes.io/component=controller \
+                --timeout=300s \
+                --context "$ctx" || \
+            echo "Warning: Timeout beim Warten auf ingress-nginx-controller in $ctx."
+        fi
+    done
+}
+
+ns() {
+    echo "Creating namespaces 'swarmchestrate' in all clusters if not exist"
+    for ctx in $(kubectl config get-contexts -o name); do
+        kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
     done
 }
 
@@ -99,7 +90,6 @@ setup_file_share() {
 }
 
 all() {
-    db
     ns
     ingress
     metallb
