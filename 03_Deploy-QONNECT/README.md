@@ -8,25 +8,23 @@
 
 
 ## Knowledge-base db
-The `knowladge_base` database is located on the `central-management-vm`:
-- you can check on `central-management-vm` whether db is running: `sudo systemctl status postgresql`
-- you can access and leave the database on `central-management-vm` with: `psql -U foo -d knowledge_base -h localhost`and `\q`
+Login on `central-management-vm`: 
+0. Status db: `sudo systemctl status postgresql`
+1. Login with `psql -U foo -d knowledge_base -h localhost` and exit with `\q` 
 
-Due to `pgAdmin` it is also possible to access the db in the browser of your host
-1. Connect to `central-management-vm` via SSH
-2. Activate `source db-venv/bin/activate` and start pgAdmin with `pgadmin4`
-   - **Email:** `foo@bar.com`
-   - **Password:** `pass123456`
-3. Start tunnel: `ssh -i <ssh-key> -L 5050:localhost:5050 <admin_username>@<pIP central-management-vm>  -fN`
-   1. Reach the DB in your browser: `http://localhost:5050/`
-
-
-
-
-
-
-
-
+Login with `pgAdmin`:
+1. Connect via ssh to `central-management-vm`
+2. `source db-venv/bin/activate` and use `pgadmin4`
+   1. (only first time:) Enter **Email:** `foo@bar.com` and **Password:** `pass123456`
+3. Open a new terminal and start port forwarding with a tunnel: `ssh -i <ssh-key> -L 5050:localhost:5050 <admin_username>@<pIP central-management-vm>  -fN`
+4. `http://localhost:5050/` and login with data from `2.1.`
+5. Add database:
+   1. **Server Name:** `QONNECT`
+   2. **Host:** `localhost`
+   3. **Port:** `5432`
+   4. **Database:** `knowledge_base`
+   5. **Username:** `foo`
+   6. **Password:** `pass`
 
 
 

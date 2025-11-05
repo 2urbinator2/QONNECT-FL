@@ -13,14 +13,11 @@ db() {
     # echo "Setup pgAdmin4 on $HOST"
     # ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
+    echo "Migrate SQL scripts on $HOST"
+    ansible-playbook -i ../inventory.yml playbooks-db/migrate-sql-scripts.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
 
-
-
-    # ssh -i "$SSH_KEY" "$USER@$HOST" "mkdir -p knowledge-base"
-
-    # scp -i "$SSH_KEY" -r swarmchestrate-alternative/knowledge-base/migrations "$USER@$HOST:~/knowledge-base/"
 
     # ssh -i "$SSH_KEY" "$USER@$HOST" '
     # cd /home/'"$USER"'/knowledge-base/migrations && 
