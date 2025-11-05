@@ -1,28 +1,22 @@
 #!/bin/bash
 
 db() {
-    echo "Adding community.postgresql collection"
-    ansible-galaxy collection install community.postgresql
+    # echo "Adding community.postgresql collection"
+    # ansible-galaxy collection install community.postgresql
 
-    echo "Setup PostgreSQL on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks-db/setup-postgre.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Setup PostgreSQL on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/setup-postgre.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
-    echo "Setup database on $HOST and enable remote access"
-    ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Setup database on $HOST and enable remote access"
+    # ansible-playbook -i ../inventory.yml playbooks-db/setup-db.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
     
-    echo "Setup pgAdmin4 on $HOST"
-    ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+    # echo "Setup pgAdmin4 on $HOST"
+    # ansible-playbook -i ../inventory.yml playbooks-db/setup-pgadmin.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
 
 
 
-    # Prüfen, was genau da gmeacht wird!!!!!:
-
-    # until ssh -i "$SSH_KEY" "$USER@$HOST" "pg_isready -U foo -d knowledge_base"; do
-    #     echo "Warte auf die Datenbank..."
-    #     sleep 3
-    # done
 
     # ssh -i "$SSH_KEY" "$USER@$HOST" "mkdir -p knowledge-base"
 
