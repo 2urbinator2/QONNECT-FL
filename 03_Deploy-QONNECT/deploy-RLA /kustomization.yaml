@@ -14,3 +14,6 @@ resources:
   - cm.yaml
   - deployment.yaml
   - ingress.yaml
+  - secret.yaml
+  - pv.yaml
+  
