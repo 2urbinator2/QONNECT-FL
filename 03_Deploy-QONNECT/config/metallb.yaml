@@ -1,0 +1,18 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: resource-lead-agent-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 10.0.1.40-10.0.1.50
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: azure-cluster
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - resource-lead-agent-pool

@@ -2,17 +2,32 @@
 
 
 
-## How to?
-1. Deploy the `knowladge_base` db `central-management-vm`: `./boostrap db`
+## How to ?
+
+### 1. Deploy Database
+Deploy the `knowladge_base` db `central-management-vm`: `./setup-qonnect db`
 
 
 
-## Knowledge-base db
-Login on `central-management-vm`: 
-0. Status db: `sudo systemctl status postgresql`
-1. Login with `psql -U foo -d knowledge_base -h localhost` and exit with `\q` 
+funktioniert noch nicht
+### 2. Deploy RLAs on K8s Cloud Clusters
+1. Fill out: `azurestorageaccountkey:` in `deploy-RLA/secret.yaml.example`
+   - Find out key: `az storage account keys list --account-name myclusterfiles --resource-group my-rg --query "[0].value" -o tsv`
 
-Login with `pgAdmin`:
+
+### 3. Deploy RAs on every Cluster
+
+
+
+
+
+### Setup Monitoring
+1. `./observe-and-chaos.sh prometheus`
+1. Setup Chaos-Testing: `./observe-and-chaos.sh chaos-mesh`
+
+
+
+## Knowledge-base
 1. Connect via ssh to `central-management-vm`
 2. `source db-venv/bin/activate` and use `pgadmin4`
    1. (only first time:) Enter **Email:** `foo@bar.com` and **Password:** `pass123456`
@@ -26,6 +41,13 @@ Login with `pgAdmin`:
    5. **Username:** `foo`
    6. **Password:** `pass`
 
+## PVC in RLA
+In Azure, PVCs cannot request storage space as easily as in Docker. Instead of each PVC making an individual claim, all of them are now placed in a single Azure File Share and configured as follows:
+1. In `01_Create-Infrastructure` a 10 GB File-Share in Azure is created
+2. With the help of `setup-driver` in `setup-qonnect.sh` a azure csi driver to the file share is deployed in `kube-system` on the cloud clusters
+3. A Secret with the key to the file share is deployed in swarmchestrate namespace
+4. A PV which points on the File Share is created 
+5. A PVC in `swarmchestrate`namespace is created which points on the PV
 
 
 
@@ -33,18 +55,9 @@ Login with `pgAdmin`:
 
 
 
-## Prerequisites
-- helm (package manager for Kubernetes) on your host
 
 
-## Installation
-1. Clone: `git clone https://github.com/dos-group/QONNECT.git`
-2. Prepare Clusters: `./boostrap all`
-   
-
-
-
-3. Deploy RLA (Cloud-Clusters)
+1. Deploy RLA (Cloud-Clusters)
       ```bash
       cd swarmchestrate-alternative/resource-lead-agent
 
@@ -62,9 +75,9 @@ Login with `pgAdmin`:
 
       kubectl apply -k deploy
       ```
-4. Deploy RA (Every cluster)
-5. Remove the Repository: `sudo rm -r swarchestrate-alternative`
-6. *Monitoring:* `./boostrap.sh monitoring`
+2. Deploy RA (Every cluster)
+3. Remove the Repository: `sudo rm -r swarchestrate-alternative`
+4. *Monitoring:* `./boostrap.sh monitoring`
       ```bash
       # Reach Prometheus of every cluster with Port-Forwarding 
       kubectl --context edge-energy -n monitoring port-forward svc/prometheus-server 9090:80

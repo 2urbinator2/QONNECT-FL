@@ -22,16 +22,17 @@ metallb() {
 
     for ctx in $(kubectl config get-contexts -o name | grep '^cloud-'); do
 
+        echo "Setting up MetalLB in context: $ctx"
         kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml --context "${ctx}"
 
-        # Warten, bis MetalLB Pods ready sind
+        echo "Waiting for MetalLB pods to be ready in context: $ctx"
         kubectl wait --namespace metallb-system \
             --for=condition=ready pod \
             --selector=app=metallb \
             --timeout=300s \
             --context "${ctx}"
 
-        # IP-Pool und L2Advertisement aus deiner Datei anwenden
+        echo "Applying MetalLB configuration in context: $ctx"
         kubectl apply -f config/metallb.yaml --context "${ctx}"
     done
 }
@@ -72,7 +73,10 @@ raft_lb() {
     done
 }
 
-setup_file_share() {
+setup_driver() {
+
+    echo "Setting up Azure File CSI Driver in all clusters"
+
     for ctx in $(kubectl config get-contexts -o name | grep '^cloud-'); do
         kubectl config use-context "$ctx"
 
@@ -82,10 +86,6 @@ setup_file_share() {
             --namespace kube-system \
             --version 1.33.4 \
             --create-namespace
-
-        kubectl apply -f config/secret.yaml
-        kubectl apply -f config/pv.yaml
-        kubectl apply -f config/pvc.yaml
     done
 }
 
@@ -116,8 +116,8 @@ case "$COMMAND" in
     raft_lb)
         raft_lb "$@"
         ;;
-    setup_file_share)
-        setup_file_share "$@"
+    vo)
+        setup_driver "$@"
         ;;
     all)
         db "$@"

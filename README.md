@@ -6,6 +6,7 @@
 - Terraform
 - Kubernetes CLI
 - Azure CLI
+- Helm
 
 
 ## Deploy QONNECT
@@ -20,7 +21,12 @@
 
 
 
-
+## Aktuell
+```bash 
+ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.171.229.149 -fN  
+ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@52.226.125.34 -fN 
+ssh -i ~/.ssh/az-key -L 5050:localhost:5050 furban@172.172.181.11 -fN
+```
 
 
 

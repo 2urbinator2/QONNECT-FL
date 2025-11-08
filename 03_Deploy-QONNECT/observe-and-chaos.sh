@@ -2,13 +2,17 @@
 
 setup_prometheus() {
 
+    echo "Look for prometheus-community and chaos-mesh in Helm repo otherwise add it."
     helm repo list | grep -q "^prometheus-community" || helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo list | grep -q "^chaos-mesh" || helm repo add chaos-mesh https://charts.chaos-mesh.org
 
     for ctx in $(kubectl config get-contexts -o name); do
 
+        echo "Processing context: $ctx. Check whether monitoring namespace exists."
         kubectl --context "$ctx" get namespace monitoring >/dev/null 2>&1 || \
             kubectl --context "$ctx" create namespace monitoring
     
+        echo "Check if Prometheus is already installed in context: $ctx"
         if helm --kube-context "$ctx" -n monitoring ls | grep -q prometheus; then
             echo "[$ctx] -> Prometheus is already installed – skipping installation."
             continue
@@ -67,15 +71,45 @@ setup_grafana() {
     done 
 }
 
+
+
+
+# Überprüfen funktioniert bisher nur auf dem edge cluster
+setup_chaos-mesh() {
+    for ctx in $(kubectl config get-contexts -o name); do
+
+        # Check and create namespace if not exists
+        kubectl --context "$ctx" get namespace chaos-testing >/dev/null 2>&1 || \
+            kubectl --context "$ctx" create namespace chaos-testing
+
+        # Check Chaos Mesh and skip if exists
+        helm --kube-context "$ctx" -n chaos-testing ls | grep -q chaos-mesh && \
+            { echo "[$ctx] -> Chaos Mesh is already installed – skipping."; continue; }
+
+        # Install Chaos Mesh
+        echo "[$ctx] -> Installing Chaos Mesh..."
+        helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh \
+            --namespace chaos-testing \
+            --set dashboard.enabled=true \
+            --set persistence.enabled=false \
+            --kube-context "$ctx"
+
+        break
+    done 
+}
+
 COMMAND="$1"
 shift
 
 case "$COMMAND" in
-    setup_prometheus)
+    prometheus)
         setup_prometheus "$@"
         ;;
-    setup_grafana)
+    grafana)
         setup_grafana "$@"
+        ;;
+    chaos-mesh)
+        setup_chaos-mesh "$@"
         ;;
     *)
         echo "Unknown command: $COMMAND"

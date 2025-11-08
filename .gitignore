@@ -6,7 +6,9 @@
 .terraform.lock.hcl
 
 # Config files from the k3s cluster
-config/
+azure-file-test.yaml
+lb.yaml
+secret.yaml
 
 # Vagrant files
 .vagrant
@@ -18,7 +20,6 @@ venv/
 kubespray/
 
 # Swarmchestrate files
-swarmchestrate-alternative/
 QONNECT/
 
 # Environment variable files

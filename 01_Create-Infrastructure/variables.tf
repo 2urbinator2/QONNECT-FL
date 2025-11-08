@@ -23,8 +23,8 @@ variable "vm_sizes" {
   type = map(string)
   default = {
     # Energy
-    "cloud-energy-control"        = "Standard_B2ps_v2"
-    "cloud-energy-worker"         = "Standard_B2ps_v2"
+    "cloud-energy-control"        = "Standard_B2pls_v2"
+    "cloud-energy-worker"         = "Standard_B2pls_v2"
     "edge-energy-control"         = "Standard_B2pls_v2" 
     "edge-energy-worker"          = "Standard_B2pls_v2"  
     #"fog-energy-control"         = "Standard_B2pls_v2" 
