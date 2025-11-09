@@ -18,6 +18,14 @@ db() {
 
 }
 
+ns() {
+    echo "Creating namespaces 'swarmchestrate' in all clusters if not exist"
+
+    for ctx in $(kubectl config get-contexts -o name); do
+        kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
+    done
+}
+
 metallb() {
 
     for ctx in $(kubectl config get-contexts -o name | grep '^cloud-'); do
@@ -39,6 +47,9 @@ metallb() {
 
 ingress() {
     for ctx in $(kubectl config get-contexts -o name); do
+
+        echo "Setting up Ingress-Nginx in context: $ctx"
+
         if echo "$ctx" | grep -q '^cloud-'; then
             kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml --context "$ctx"
             kubectl wait --namespace ingress-nginx \
@@ -46,22 +57,17 @@ ingress() {
                 --selector=app.kubernetes.io/component=controller \
                 --timeout=300s \
                 --context "$ctx" || \
-            echo "Warning: Timeout beim Warten auf ingress-nginx-controller in $ctx."
         fi
-    done
-}
-
-ns() {
-    echo "Creating namespaces 'swarmchestrate' in all clusters if not exist"
-    for ctx in $(kubectl config get-contexts -o name); do
-        kubectl create namespace swarmchestrate --context "$ctx" --dry-run=client -o yaml | kubectl apply -f -
     done
 }
 
 raft_lb() {
     for ctx in $(kubectl config get-contexts -o name | grep '^cloud-'); do
-        kubectl apply -f swarmchestrate-alternative/config/lb.yaml -n swarmchestrate --context "$ctx"
 
+        echo "Setting up Raft_lb LoadBalancer in context: $ctx"
+        kubectl apply -f config/lb.yaml -n swarmchestrate --context "$ctx"
+
+        echo "Give some time for LoadBalancer to get an IP from MetalLB in context: $ctx"
         if kubectl get svc -A -o yaml --context "$ctx" | grep -q "metallb.universe.tf/address-pool"; then
        
             kubectl patch svc resource-lead-agent-lb -n swarmchestrate \
@@ -92,9 +98,7 @@ setup_driver() {
 all() {
     ns
     ingress
-    metallb
     raft_lb
-    setup_file_share
 }
 
 COMMAND="$1"
