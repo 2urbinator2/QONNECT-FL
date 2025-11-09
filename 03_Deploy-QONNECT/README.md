@@ -12,7 +12,14 @@
 1. Fill out: `azurestorageaccountkey:` in `deploy-RLA/secret.yaml.example`
    - Find out key: `az storage account keys list --account-name myclusterfiles --resource-group my-rg --query "[0].value" -o tsv`
 2. Fill out (narrow down individually the area): `addresses:` (3 are enough) in `config/metallb.yaml`
-   1. 
+   1. Deploy Metal-lb on the cluster: `./setup-qonnect mlb`
+3. Make the following changes in `deploy-RLA/cm.yaml`:
+   1. Use `Privat IP` of the `central-management-vm`in `postgresdb:` for `host:`
+   2. Use unique `id:` and enter all `external IP` of every LoadBalncer in `peers`
+4. Deploy RLA kubectl: `kubectl apply -k deploy-RLA`
+
+
+
 
 
 ### 3. Deploy RAs on every Cluster
@@ -56,25 +63,6 @@ In Azure, PVCs cannot request storage space as easily as in Docker. Instead of e
 
 
 
-
-1. Deploy RLA (Cloud-Clusters)
-      ```bash
-      cd swarmchestrate-alternative/resource-lead-agent
-
-      ____
-      # Make the following changes under deploy/cm.yaml
-      postgresdb:
-         host: 10.0.1.10 # Use Privat IP of your DB-VM
-      raft:
-         id: 1 # Change ID on every cluster you deploy
-         peers: # All Clusters you want to deploy RLA 
-            - http://10.0.1.41:8080 # Use raft-lb external IP
-      
-      # Important comment out pvc.yaml in deploy/kustomization.yaml
-      ____
-
-      kubectl apply -k deploy
-      ```
 2. Deploy RA (Every cluster)
 3. Remove the Repository: `sudo rm -r swarchestrate-alternative`
 4. *Monitoring:* `./boostrap.sh monitoring`

@@ -27,8 +27,8 @@ data:
     raft:
       id: 1
       peers:
-        - http://172.18.0.2:8080
-        - http://172.18.0.7:8080
-        - http://172.18.0.12:8080
+        - http://10.0.1.41:8080
+
 
 # Host of the DB is now the internal IP 
+# User external IPs (which is a private IP) for the peers 
