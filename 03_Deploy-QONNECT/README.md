@@ -1,8 +1,7 @@
 # Deploy Qonnect in Azure
 
 
-
-## How to ?
+## How to deploy Qonnect?
 
 ### 1. Deploy Database and Prepare the Clusters
 1. Deploy the `knowladge_base` db `central-management-vm`: `./setup-qonnect db`
@@ -15,26 +14,22 @@
    1. Deploy Metal-lb on the cluster: `./setup-qonnect mlb`
 3. Make the following changes in `deploy-RLA/cm.yaml`:
    1. Use `Privat IP` of the `central-management-vm`in `postgresdb:` for `host:`
-   2. Use unique `id:` and enter all `external IP` of every LoadBalncer in `peers`
-4. Deploy RLA kubectl: `kubectl apply -k deploy-RLA`
-
-
-
-
+   2. Use unique `id:` and enter all `EXTERNAL-LP` of every LoadBalancer from `swarmchestrate` in `peers`
+4. Deploy RLA: `kubectl apply -k deploy-RLA`
 
 ### 3. Deploy RAs on every Cluster
+1. Make the following changes:
+   1. Chose depending on your cluster `app.type`: cloud, fog, edge
+   2. Enter `EXTERNAL-LP` of the LoadBalancer from `ingress-nginx` of cloud-cluster
+2. Deploy RA: `kubectl apply -k deploy-RA`
 
 
-
-
-
-### Setup Monitoring
+## How to setup Monitoring and Chaos Testing
 1. `./observe-and-chaos.sh prometheus`
 1. Setup Chaos-Testing: `./observe-and-chaos.sh chaos-mesh`
 
-
-
-## Knowledge-base
+## Comments 
+### Knowledge-base
 1. Connect via ssh to `central-management-vm`
 2. `source db-venv/bin/activate` and use `pgadmin4`
    1. (only first time:) Enter **Email:** `foo@bar.com` and **Password:** `pass123456`
@@ -48,7 +43,7 @@
    5. **Username:** `foo`
    6. **Password:** `pass`
 
-## PVC in RLA
+### PVC in RLA
 In Azure, PVCs cannot request storage space as easily as in Docker. Instead of each PVC making an individual claim, all of them are now placed in a single Azure File Share and configured as follows:
 1. In `01_Create-Infrastructure` a 10 GB File-Share in Azure is created
 2. With the help of `setup-driver` in `setup-qonnect.sh` a azure csi driver to the file share is deployed in `kube-system` on the cloud clusters
@@ -56,61 +51,6 @@ In Azure, PVCs cannot request storage space as easily as in Docker. Instead of e
 4. A PV which points on the File Share is created 
 5. A PVC in `swarmchestrate`namespace is created which points on the PV
 
-
-
-
-
-
-
-
-2. Deploy RA (Every cluster)
-3. Remove the Repository: `sudo rm -r swarchestrate-alternative`
-4. *Monitoring:* `./boostrap.sh monitoring`
-      ```bash
-      # Reach Prometheus of every cluster with Port-Forwarding 
-      kubectl --context edge-energy -n monitoring port-forward svc/prometheus-server 9090:80
-
-      # Reach Grafana of the Grafana cluster with Port Forwarding
-      kubectl --context cloud-energy -n monitoring port-forward svc/grafana 9090:80 # User: admin, Password: Swarmchestrate
-
-      ```
-
-
 ## Sources
 [1] https://github.com/dos-group/swarmchestrate-alternative
 [2] https://github.com/kubernetes-sigs/azurefile-csi-driver/tree/master/charts
-
-## Problems
-### Load Balancer
-- *Problem:* Failed to allocate IP for "swarmchestrate/resource-lead-agent-lb": unknown pool "kind-cluster"
-      ```bash 
-      kubectl get svc -A -o yaml | grep -A5 "metallb.universe.tf/address-pool"
-      # if: metallb.universe.tf/address-pool: kind-cluster
-
-      kubectl patch svc resource-lead-agent-lb -n swarmchestrate \
-      -p '{"metadata":{"annotations":{"metallb.universe.tf/address-pool":"resource-lead-agent-pool"}}}'
-      ```
-
-### PVC (File Share in Azure) 
-- *Lösung:* Secret, PV and PVC are corrected 
-    ```bash
-    # Azure CSI Driver
-    kubectl get pods -n kube-system | grep csi
-
-    # Secret: Access key to the Storage Account
-    kubectl get secret -n swarmchestrate
-
-    # PV and PVC
-    kubectl get pv
-    kubectl get pvc -n swarmchestrate
-
-
-    ```
-### Image Resource Lead Agent
-```bash
-docker pull ghcr.io/mahmud2011/swarmchestrate/resource-lead-agent:0.1.0
-
-docker tag ghcr.io/mahmud2011/swarmchestrate/resource-lead-agent:0.1.0 \
-           ghcr.io/2urbinator2/resource-lead-agent:0.1.0-amd64
-
-```

@@ -121,17 +121,11 @@ case "$COMMAND" in
     rlb)
         raft_lb "$@"
         ;;
-    vo)
+    driver)
         setup_driver "$@"
         ;;
     all)
-        db "$@"
-        ns "$@"
-        ingress "$@"
-        cleanup_edge_ingress "$@"
-        metallb "$@"
-        raft_lb "$@"
-        setup_file_share "$@"
+        all "$@"
         ;;
     *)
         echo "Unknown command: $COMMAND"
