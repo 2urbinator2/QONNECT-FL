@@ -4,15 +4,15 @@
 
 ## How to ?
 
-### 1. Deploy Database
-Deploy the `knowladge_base` db `central-management-vm`: `./setup-qonnect db`
+### 1. Deploy Database and Prepare the Clusters
+1. Deploy the `knowladge_base` db `central-management-vm`: `./setup-qonnect db`
+2. Prepare the clusters: `./setup-qonnect all`
 
-
-
-funktioniert noch nicht
 ### 2. Deploy RLAs on K8s Cloud Clusters
 1. Fill out: `azurestorageaccountkey:` in `deploy-RLA/secret.yaml.example`
    - Find out key: `az storage account keys list --account-name myclusterfiles --resource-group my-rg --query "[0].value" -o tsv`
+2. Fill out (narrow down individually the area): `addresses:` (3 are enough) in `config/metallb.yaml`
+   1. 
 
 
 ### 3. Deploy RAs on every Cluster

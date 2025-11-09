@@ -26,25 +26,6 @@ ns() {
     done
 }
 
-metallb() {
-
-    for ctx in $(kubectl config get-contexts -o name | grep '^cloud-'); do
-
-        echo "Setting up MetalLB in context: $ctx"
-        kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml --context "${ctx}"
-
-        echo "Waiting for MetalLB pods to be ready in context: $ctx"
-        kubectl wait --namespace metallb-system \
-            --for=condition=ready pod \
-            --selector=app=metallb \
-            --timeout=300s \
-            --context "${ctx}"
-
-        echo "Applying MetalLB configuration in context: $ctx"
-        kubectl apply -f config/metallb.yaml --context "${ctx}"
-    done
-}
-
 ingress() {
     for ctx in $(kubectl config get-contexts -o name); do
 
@@ -56,7 +37,7 @@ ingress() {
                 --for=condition=ready pod \
                 --selector=app.kubernetes.io/component=controller \
                 --timeout=300s \
-                --context "$ctx" || \
+                --context "$ctx" 
         fi
     done
 }
@@ -99,6 +80,26 @@ all() {
     ns
     ingress
     raft_lb
+    setup_driver
+}
+
+metallb() {
+
+    ctx=$(kubectl config current-context)
+
+    echo "Setting up MetalLB in context: $ctx"
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml --context "${ctx}"
+
+    echo "Waiting for MetalLB pods to be ready in context: $ctx"
+    kubectl wait --namespace metallb-system \
+        --for=condition=ready pod \
+        --selector=app=metallb \
+        --timeout=300s \
+        --context "${ctx}"
+
+    echo "Applying MetalLB configuration in context: $ctx"
+    kubectl apply -f config/metallb.yaml --context "${ctx}"
+
 }
 
 COMMAND="$1"
@@ -114,10 +115,10 @@ case "$COMMAND" in
     ingress)
         ingress "$@"
         ;;
-    metallb)
+    mlb)
         metallb "$@"
         ;;
-    raft_lb)
+    rlb)
         raft_lb "$@"
         ;;
     vo)
