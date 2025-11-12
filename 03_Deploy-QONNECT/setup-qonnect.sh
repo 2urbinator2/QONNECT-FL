@@ -102,6 +102,41 @@ metallb() {
 
 }
 
+remove_metallb() {
+    ctx=$(kubectl config current-context)
+
+    # Remove finalizers from MetalLB resources to allow deletion
+    for kind in ipaddresspool l2advertisement bgppeer; do
+        kubectl get $kind -n metallb-system -o name --context "${ctx}" 2>/dev/null \
+        | xargs -r -n1 -I{} kubectl patch {} -n metallb-system --context "${ctx}" \
+            -p '{"metadata":{"finalizers":[]}}' --type=merge
+    done
+
+    # Delete MetalLB resources
+    kubectl delete ipaddresspool,l2advertisement,bgppeer --all -n metallb-system --context "${ctx}" --ignore-not-found
+
+    # Delete Controller, Speaker & Services
+    kubectl delete deployment,daemonset,service -n metallb-system --all --context "${ctx}" --ignore-not-found
+
+    # Finally, delete the MetalLB CRDs
+    for crd in ipaddresspools.metallb.io l2advertisements.metallb.io bgppeers.metallb.io; do
+        kubectl patch crd $crd -p '{"metadata":{"finalizers":[]}}' --type=merge --context "${ctx}" 2>/dev/null || true
+    done
+
+    # Delete the CRDs
+    kubectl delete crd ipaddresspools.metallb.io l2advertisements.metallb.io bgppeers.metallb.io --ignore-not-found
+
+    # Delete Namespace Finalizers
+    kubectl patch namespace metallb-system -p '{"metadata":{"finalizers":[]}}' --type=merge --context "${ctx}"
+
+    # Delete Namespace
+    kubectl patch namespace metallb-system -p '{"metadata":{"finalizers":[]}}' --type=merge
+    kubectl delete namespace metallb-system --ignore-not-found
+
+
+
+}
+
 COMMAND="$1"
 shift
 
@@ -117,6 +152,9 @@ case "$COMMAND" in
         ;;
     mlb)
         metallb "$@"
+        ;;
+    rmlb)
+        remove_metallb "$@"
         ;;
     rlb)
         raft_lb "$@"

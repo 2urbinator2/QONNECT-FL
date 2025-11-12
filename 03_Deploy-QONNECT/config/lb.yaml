@@ -6,7 +6,7 @@ metadata:
   labels:
     app: resource-lead-agent
   annotations:
-    metallb.universe.tf/address-pool: resource-lead-agent-pool
+    metallb.universe.tf/address-pools: resource-lead-agent-pool
 spec:
   type: LoadBalancer
   selector:
