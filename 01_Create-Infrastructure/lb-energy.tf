@@ -1,6 +1,6 @@
 # Load Balncer 
 resource "azurerm_lb" "metalb_lb" {
-  name                = "metalb-frontend-lb"
+  name                = "energy-lb"
   location            = data.azurerm_resource_group.existing.location
   resource_group_name = data.azurerm_resource_group.existing.name
   sku                 = "Standard"

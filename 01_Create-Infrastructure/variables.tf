@@ -27,8 +27,8 @@ variable "vm_sizes" {
     "cloud-energy-worker"         = "Standard_B2pls_v2"
     "edge-energy-control"         = "Standard_B2pls_v2" 
     "edge-energy-worker"          = "Standard_B2pls_v2"  
-    "fog-energy-control"         = "Standard_B2pls_v2" 
-    "fog-energy-worker"          = "Standard_B2pls_v2"
+    "fog-energy-control"          = "Standard_B2pls_v2" 
+    "fog-energy-worker"           = "Standard_B2pls_v2"
     # Performance
     "cloud-performance-control"   = "Standard_B2pls_v2" 
     "cloud-performance-worker"    = "Standard_B2pls_v2" 
