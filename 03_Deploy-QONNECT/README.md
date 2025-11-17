@@ -54,3 +54,8 @@ In Azure, PVCs cannot request storage space as easily as in Docker. Instead of e
 ## Sources
 [1] https://github.com/dos-group/swarmchestrate-alternative
 [2] https://github.com/kubernetes-sigs/azurefile-csi-driver/tree/master/charts
+
+
+# MetalLB
+40-43 -> cloud-energy
+44-46 -> cloud-cost
