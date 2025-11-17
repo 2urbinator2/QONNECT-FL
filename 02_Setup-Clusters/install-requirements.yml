@@ -1,0 +1,26 @@
+- name: Update apt cache on Debian/Ubuntu systems
+  hosts: all
+  become: true 
+  tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    
+    - name: Ensure Python3 and pip3 are installed
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Copy local requirements.txt to VM
+      ansible.builtin.copy:
+        src: ./kubespray/requirements.txt 
+        dest: /tmp/requirements.txt        
+
+    - name: Install Python dependencies from requirements.txt
+      ansible.builtin.pip:
+        requirements: /tmp/requirements.txt
+        executable: pip3
