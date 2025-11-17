@@ -23,8 +23,10 @@
 
 ## Aktuell
 ```bash 
-ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.171.229.149 -fN  
-ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@52.226.125.34 -fN 
+# cost 43, energy 44, performance 45, management vm
+ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@172.190.180.76 -fN  
+ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@172.171.229.149 -fN 
+ssh -i ~/.ssh/az-key -L 6445:localhost:6443 furban@20.39.50.48 -fN
 ssh -i ~/.ssh/az-key -L 5050:localhost:5050 furban@172.172.181.11 -fN
 ```
 

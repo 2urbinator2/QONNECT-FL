@@ -11,14 +11,22 @@
     ssh -i ~/.ssh/az-key -L 6444:localhost:6443 furban@52.226.125.34 -fN 
     ```
 
+
+ansible-playbook -i clusters/e-energy.ini install-requirements.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+
+
+ansible-galaxy collection install kubernetes.core
+ansible-galaxy collection install ansible.utils
+
    
 
+ansible-playbook -i ../clusters/e-energy.ini cluster.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
+
+ansible-playbook -i ../clusters/c-cost.ini cluster.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'
 
 
-
-
-4. Deploy K3s and K8s clusters on the infrastructure
-    - ***K3S (Edge and Fog):*** Fillout `az-k3s-inventory.yml` (cloud nodes as well) and deploy with `ansible-playbook -i inventory.yml playbooks/k3s-setup.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
+1. Deploy K3s and K8s clusters on the infrastructure
+    - ***K3S (Edge and Fog):*** Fillout `az-k3s-inventory.yml` (cloud nodes as well) and deploy with `ansible-playbook -i ../inventory.yml playbooks/k3s-setup.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
     - ***K8S (Cloud):*** Using Kubespray (You have to do it manually for every cluster)
       ```bash
       git clone https://github.com/kubernetes-sigs/kubespray.git
@@ -43,7 +51,7 @@
       sudo rm -r kubespray
       ```
 
-5. Cluster Management with Kubernetes CLI: `ansible-playbook -i inventory.yml playbooks/cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
+2. Cluster Management with Kubernetes CLI: `ansible-playbook -i ../inventory.yml cluster-management.yml -e 'ansible_ssh_extra_args="-o StrictHostKeyChecking=no"'`
     ```bash
       # Create tunnel to every cluster to see all clusters in Kubernetes CLI: 
       ssh -i ~/.ssh/az-key -L 6443:localhost:6443 furban@20.121.187.237 -fN # Cost 
