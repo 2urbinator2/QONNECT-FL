@@ -1,0 +1,51 @@
+- name: Install dependencies on all clusters
+  hosts: all
+  tags: all
+  tasks:
+    - name: Update apt & install dependencies
+      apt:
+        name:
+          - python3
+          - python3-venv
+          - python3-pip
+          - python3-dev
+          - build-essential
+          - curl
+        state: present
+        update_cache: yes
+    
+    - name: Install Python packages for Ansible
+      pip:
+        name:
+          - jmespath
+          - netaddr  
+        executable: pip3
+
+
+- name: Install dependencies for Kubespray
+  # hosts: "cloud-*"
+  hosts: all
+  tags: spray
+  tasks:
+    - name: Copy local requirements.txt to prepare VMs for Kubespray Deployment
+      ansible.builtin.copy:
+        src: ./kubespray/requirements.txt 
+        dest: /tmp/requirements.txt  
+    
+    - name: Install Python dependencies from requirements.txt
+      ansible.builtin.pip:
+        requirements: /tmp/requirements.txt
+        executable: pip3
+
+- name: Install dependencies on central mangement vm
+  hosts: central-management-vm
+  tags: db
+  tasks:
+    - name: Install dependencies 
+      apt:
+        name:
+          - libpq-dev
+          - acl
+          - curl
+        state: present
+        update_cache: yes

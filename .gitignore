@@ -1,0 +1,38 @@
+# Generel Files
+Archiv/
+venv/
+docs
+inventory.yml
+identity.tf
+VirtualBox-1
+Azure-1
+backup
+evaluation-1
+
+# 00 Test Environment
+00_TestEnv
+
+# 01 Create Infrastructure
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# 02 Setup Clusters
+kubespray/
+clusters/
+
+# 03 Deploy Qonnect
+QONNECT/
+azure.json
+pv.yaml
+quick-cmd.sh
+deploy-sample-application-1
+
+# 04 Optimization
+*.pkl
+development
+
+# Prüfen
+.env

@@ -1,0 +1,164 @@
+- name: Establishment of local central cluster management
+  hosts: "*-control"
+  tasks:
+    - name: Create a local folder
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/.kube/az-cluster"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Check K8s config file
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_file
+
+    - name: Cancel if directory is missing
+      ansible.builtin.fail:
+        msg: "K8s config is missing"
+      when: 
+        - k8s_file.stat is defined and not k8s_file.stat.exists
+    
+    - name: Set advertise_ip to the IP from the inventory
+      ansible.builtin.set_fact:
+        advertise_ip: "{{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}"
+    
+    - name: Write kubeadm ClusterConfiguration
+      ansible.builtin.copy:
+        dest: /etc/kubernetes/kubeadm-config.yaml
+        content: |
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: ClusterConfiguration
+          controlPlaneEndpoint: "{{ advertise_ip }}:6443"
+          apiServer:
+            certSANs:
+              - "{{ advertise_ip }}"
+          networking:
+            podSubnet: "10.244.0.0/16"
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Restart kubelet
+      ansible.builtin.systemd:
+        name: kubelet
+        state: restarted
+    
+    - name: Copy the kubeadm admin.conf from the host to the local machine
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ lookup('env','HOME') }}/.kube/az-cluster/{{ inventory_hostname | regex_replace('-control$', '') }}.yaml"
+        flat: yes
+
+    - name: Adjust the API server port in all Kubeconfigs.
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: 'server: https://.*:6443'
+        replace: "server: https://localhost:{{ 6443 + index}}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Adjust context name
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)name:.*$'
+        replace: "\\1name: {{ item | basename | regex_replace('-control$', '') | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+
+    - name: Adjust cluster name
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)cluster:.*$'
+        replace: "\\1cluster: {{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '')}}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+
+    - name: Adjust user reference in context
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)user: default$'
+        replace: "\\1user: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+
+    - name: Adjust user name
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)- name: default$'
+        replace: "\\1- name: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Adjust context user names in kubeconfig
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)user:\s*kubernetes-admin$'
+        replace: "\\1user: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+    
+    - name: Adjust user names in kubeconfig
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: '^(\s*)- name:\s*kubernetes-admin$'
+        replace: "\\1- name: user-{{ (item | basename | regex_replace('-control$', '')) | regex_replace('\\.yaml$', '') }}"
+      loop: "{{ lookup('fileglob', lookup('env','HOME') + '/.kube/az-cluster/*.yaml', wantlist=True) }}"
+      loop_control:
+        index_var: index
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false
+
+    - name: Merge kubeconfig files
+      ansible.builtin.shell: >
+        KUBECONFIG=$(ls ~/.kube/az-cluster/*.yaml | tr '\n' ':') kubectl config view --flatten > ~/.kube/config
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      run_once: true
+      become: no
+      vars:
+        ansible_become: false

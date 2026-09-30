@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-agent
+spec:
+  replicas: 1
+  template:
+    metadata:
+    spec:
+      enableServiceLinks: false
+      serviceAccountName: resource-agent
+      imagePullSecrets:
+      - name: git-secret
+      containers:
+        - name: resource-agent
+          image: ghcr.io/2urbinator2/swarmchestrate/resource-agent:debug
+          imagePullPolicy: Always
+          args:
+            - resource-agent
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: resource-agent

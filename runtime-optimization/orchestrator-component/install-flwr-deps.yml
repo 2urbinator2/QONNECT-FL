@@ -1,0 +1,65 @@
+- name: Configurations for Server and Clients
+  hosts: "*-control,cloud-*-worker"
+  tags: d_py
+  tasks: 
+    - name: Create a project folder with write and execute permissions
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/flwr-files"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      tags: create_folder
+
+    - name: Create virtual environment if it doesn't exist
+      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/flwr-files/venv"
+      args:
+        creates: "/home/{{ ansible_user }}/flwr-files/venv"
+      tags: create_venv
+
+    - name: Install required Python packages inside venv
+      ansible.builtin.pip:
+        executable: "/home/{{ ansible_user }}/flwr-files/venv/bin/pip"
+        name:
+          - flwr==1.27.0
+          - fastai==2.8.4
+          - scikit-learn==1.7.2
+          - sktime 
+          - pandas==2.3.3
+          - numpy==2.2.6
+          - tsai==0.4.1 
+          - torch==2.7.1
+          - pyarrow==23.0.1
+          - ipython==8.38.0
+          - ipykernel==7.2.0
+        state: present
+      tags: install_deps
+
+- name: Specific Client Configurations
+  hosts: "*-control"
+  tasks: 
+    - name: Transfer client files to the clients
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/home/{{ ansible_user }}/flwr-files"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      with_items:
+        - "../data/train.csv"
+        - "./remote-preparation/start-client.sh"
+      tags: transfer_files_client
+
+- name: Specific Server Configurations
+  hosts: "cloud-*-worker"
+  tasks: 
+    - name: Transfer server files to the clients
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/home/{{ ansible_user }}/flwr-files"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      with_items:
+        - "./remote-preparation/start-server.sh"
+      tags: transfer_files_server

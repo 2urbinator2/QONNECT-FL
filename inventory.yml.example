@@ -1,0 +1,7 @@
+[cloud-energy-control]
+cloud-energy-control ansible_host= private_ip=
+
+
+
+
+[all:vars]

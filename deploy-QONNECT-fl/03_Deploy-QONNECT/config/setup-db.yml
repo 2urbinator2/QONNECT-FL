@@ -1,0 +1,186 @@
+- name: Setup PostgreSQL
+  hosts: central-management-vm
+  tags: setup-postgre
+  become: yes
+  collections:
+    - community.postgresql
+  tasks:    
+    - name: Install psycopg2 for Python3
+      pip:
+        name: psycopg2-binary
+        executable: pip3
+
+    - name: Install PostgreSQL
+      apt:
+        name: postgresql
+        state: present
+
+    - name: Start PostgreSQL
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Create remote_tmp for PostgreSQL
+      file:
+        path: /var/lib/postgresql/.ansible/tmp
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: '0700'
+
+    - name: Create PostgreSQL user
+      community.postgresql.postgresql_user:
+        name: foo
+        password: pass
+        state: present
+        login_user: postgres
+      become_user: postgres
+    
+    - name: Create PostgreSQL database
+      become_user: postgres
+      postgresql_db:
+        name: knowledge_base
+        owner: foo
+        state: present
+
+    - name: Create PostgreSQL listen on all interfaces
+      lineinfile:
+        path: /etc/postgresql/14/main/postgresql.conf
+        regexp: '^#?listen_addresses'
+        line: "listen_addresses = '*'"
+        state: present
+
+    - name: Access control rules for all IPs in pg_hba.conf
+      lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        regexp: '^host'
+        line: "host    all     all     0.0.0.0/0     md5"
+        state: present
+
+    - name: Restart PostgreSQL to apply changes
+      service:
+        name: postgresql
+        state: restarted
+
+- name: Setup pgAdmin4 for graphical UI
+  hosts: central-management-vm
+  become: yes
+  tags: setup-pgAdmin4
+  tasks:
+    - name: Create /var/lib/pgadmin directory
+      ansible.builtin.file:
+        path: /var/lib/pgadmin
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Create /var/log/pgadmin directory
+      ansible.builtin.file:
+        path: /var/log/pgadmin
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+    
+    - name: Create virtual environment if it doesn't exist
+      ansible.builtin.command: python3 -m venv "/home/{{ ansible_user }}/db-venv"
+      args:
+        creates: "/home/{{ ansible_user }}/db-venv"
+
+    - name: Install pgAdmin4 inside venv
+      ansible.builtin.pip:
+        executable: "/home/{{ ansible_user }}/db-venv/bin/pip"
+        name:
+          - pgadmin4
+        state: present
+    
+- name: Migration of the tables
+  hosts: central-management-vm         
+  become: yes
+  tags: migration
+  tasks:
+    - name: Ensure knowledge-base directory exists
+      file:
+        path: /home/{{ ansible_user }}/knowledge-base
+        state: directory
+        mode: '0755'
+    
+    - name: Copy migrations-db directory to remote host
+      copy:
+        src: "{{ playbook_dir }}/../config/migrations/"
+        dest: /home/{{ ansible_user }}/knowledge-base/
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+    
+    - name: Apply SQL migration scripts
+      shell: |
+        for file in /home/{{ ansible_user }}/knowledge-base/*.up.sql; do
+          PGPASSWORD=pass psql -h localhost -U foo -d knowledge_base -f "$file";
+        done
+
+- name: Setup pgAdmin4 with Auto-Server-Import
+  hosts: central-management-vm
+  become: yes
+  tags: Auto-import
+  vars:
+    venv: "/home/{{ ansible_user }}/db-venv"
+    pg_mail: "foo@bar.com"
+    pg_pass: "pass123456"
+    db_pass: "pass"
+    pg_data: "/var/lib/pgadmin"
+    pg_log: "/var/log/pgadmin"
+
+  tasks:
+    - name: Ensure pgAdmin directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      loop:
+        - "{{ pg_data }}"
+        - "{{ pg_log }}"
+
+    - name: Save database password for pgAdmin auto-login
+      ansible.builtin.copy:
+        dest: "{{ pg_data }}/pgpass"
+        content: "*:*:*:postgres:{{ db_pass }}" 
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+
+    - name: Upload server.json (Server Configuration)
+      ansible.builtin.copy:
+        src: ./server.json  
+        dest: "{{ pg_data }}/server.json"
+        owner: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Configure pgAdmin to use persistent storage
+      ansible.builtin.copy:
+        dest: "{{ venv }}/lib/python3.10/site-packages/pgadmin4/config_local.py"
+        content: |
+          import os
+          DATA_DIR = '{{ pg_data }}'
+          SQLITE_PATH = os.path.join(DATA_DIR, 'pgadmin4.db')
+          SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
+          STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
+        owner: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Final Import of server.json
+      ansible.builtin.shell:
+        cmd: >
+          {{ venv }}/bin/python3 
+          {{ venv }}/lib/python3.10/site-packages/pgadmin4/setup.py 
+          load-servers {{ pg_data }}/server.json 
+          --user {{ pg_mail }}
+      environment:
+        PGADMIN_CONFIG_DIR: "{{ pg_data }}"
+        PGADMIN_SETUP_EMAIL: "{{ pg_mail }}"
+        PGADMIN_SETUP_PASSWORD: "{{ pg_pass }}"
+      register: final_import

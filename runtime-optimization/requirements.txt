@@ -1,0 +1,27 @@
+
+# Flower
+flwr==1.27.0
+flwr[simulation]>=1.27.0
+
+# ML-Frameorks
+fastai==2.8.2
+tsai==0.4.1
+torch==2.7.1
+
+# Standard ML
+pandas==2.3.3
+numpy==2.2.6
+scikit-learn==1.5.2
+
+# Jupyter 
+ipython==8.38.0
+ipykernel==7.2.0
+
+# Further
+imbalanced-learn==0.12.4
+psutil==6.1.0
+pyts==0.13.0
+fastcore==1.8.0
+sktime 
+pyarrow==23.0.1
+joblib

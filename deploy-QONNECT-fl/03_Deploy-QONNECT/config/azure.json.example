@@ -1,0 +1,13 @@
+{
+    "cloud": "...",
+    "tenantId": "...",
+    "subscriptionId": "...",
+    "resourceGroup": "...",
+    "location": "...",
+    "useManagedIdentityExtension": ...,
+    "securityGroupName": "...",
+    "userAssignedIdentityID": "...",
+    "vnetName": "...",
+    "vnetResourceGroup": "...",
+    "subnetName": "...",
+}

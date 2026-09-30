@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-lead-agent
+  namespace: swarmchestrate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-lead-agent
+  template:
+    metadata:
+      labels:
+        app: resource-lead-agent
+    spec:
+      serviceAccountName: resource-lead-agent
+      imagePullSecrets:
+      - name: git-secret
+      containers:
+      - name: resource-lead-agent
+        image: ghcr.io/2urbinator2/swarmchestrate/resource-lead-agent:debug
+        workingDir: /data
+        args:
+          - serve
+        ports:
+          - containerPort: 8080
+            name: raft
+          - containerPort: 8081
+            name: http
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config-volume
+            mountPath: /etc/config
+            readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: resource-lead-agent
+        - name: data
+          persistentVolumeClaim:
+            claimName: resource-lead-agent-raft

@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: resource-lead-agent
+  namespace: swarmchestrate
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /swarmchestrate
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-lead-agent
+                port:
+                  number: 8081
+
